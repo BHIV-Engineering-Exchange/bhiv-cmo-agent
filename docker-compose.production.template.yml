@@ -1,0 +1,30 @@
+services:
+  cmo-agent-api:
+    image: bhiv/cmo-agent-api:IMG_TAG
+    container_name: cmo-agent-api-prod
+    restart: unless-stopped
+    ports:
+      - "8035:8000"
+    env_file:
+      - .env
+    volumes:
+      - cmo_records:/app/data/workflow_records
+      - cmo_logs:/app/logs
+    networks:
+      - cmo-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  cmo_records:
+    driver: local
+  cmo_logs:
+    driver: local
+
+networks:
+  cmo-net:
+    driver: bridge
