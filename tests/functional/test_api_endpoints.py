@@ -155,15 +155,18 @@ def test_evaluate_linear_tv_abstains_with_insufficient_evidence(api_client, auth
 # 5. Human Manager Approval Gate Tests
 # -----------------------------------------------------------------------------
 def test_approval_rejects_placeholder_reviewer_identity(api_client, auth_headers):
-    """QA-001: Reviewer identity validation rejects placeholders with 422."""
-    disallowed_reviewers = ["prof_evaluator", "anonymous", "default", "none", "."]
+    """QA-001 & QA-NEW-003: Reviewer identity validation rejects placeholders, symbols, and single-word tokens."""
+    disallowed_reviewers = [
+        "prof_evaluator", "anonymous", "default", "none", ".",
+        "---", "123", "admin", "evaluator", "SingleWord"
+    ]
     for reviewer in disallowed_reviewers:
         resp = api_client.post(
             "/api/v1/proposals/REQ-MKT-TEST-LINKEDIN-001/approve",
             json={"reviewer_identity": reviewer},
             headers=auth_headers
         )
-        assert resp.status_code in (400, 422), f"Expected rejection for reviewer: '{reviewer}'"
+        assert resp.status_code == 422, f"Expected 422 Unprocessable Entity for reviewer: '{reviewer}', got {resp.status_code}"
 
 
 def test_approval_succeeds_with_valid_reviewer(api_client, auth_headers):
@@ -254,6 +257,20 @@ def test_rejection_lifecycle(api_client, auth_headers):
     assert dup_resp.status_code == 409
 
 
+def test_reject_unrejectable_state_returns_400(api_client, auth_headers):
+    """QA-NEW-002: Attempting to reject an INSUFFICIENT_EVIDENCE proposal returns HTTP 400."""
+    resp = api_client.post(
+        "/api/v1/proposals/REQ-MKT-TEST-LTV-001/reject",
+        json={
+            "reviewer_identity": "Pratik Bhuwad - CMO Product Owner",
+            "decision_notes": "Attempting reject on zero-evidence proposal."
+        },
+        headers=auth_headers
+    )
+    assert resp.status_code == 400
+    assert "cannot be rejected" in resp.json()["detail"].lower()
+
+
 # -----------------------------------------------------------------------------
 # 7. Replay and Retrieval Tests
 # -----------------------------------------------------------------------------
@@ -275,7 +292,13 @@ def test_replay_and_retrieval(api_client, auth_headers):
         headers=auth_headers
     )
     assert replay_resp.status_code == 200
-    assert replay_resp.json()["request_id"] == "REQ-MKT-TEST-LINKEDIN-001"
+    replay_data = replay_resp.json()
+    assert replay_data["request_id"] == "REQ-MKT-TEST-LINKEDIN-001"
+    # QA-NEW-002: Replay preserves finalized approval state
+    assert replay_data["status"] == WorkflowStatus.APPROVED.value
+    assert replay_data["approval"] is not None
+    assert replay_data["approval"]["reviewer"] == "Pratik Bhuwad - CMO Product Owner"
+    assert any(h["action"] == "REPLAY_AUDITED" for h in replay_data["history"])
 
 
 # -----------------------------------------------------------------------------
@@ -291,3 +314,10 @@ def test_masterdb_persistence_adapter_graceful_offline():
     # Governed retrieve offline fallback
     retrieval = adapter.fetch_marketing_intelligence()
     assert retrieval["status"] == "OFFLINE_FALLBACK"
+
+
+def test_masterdb_persistence_adapter_is_record_store():
+    """QA-NEW-005: Verify MasterDBPersistenceAdapter is a RecordStore subclass."""
+    from evidence_rag.record_store import RecordStore
+    adapter = MasterDBPersistenceAdapter(base_url="http://127.0.0.1:9999")
+    assert isinstance(adapter, RecordStore)

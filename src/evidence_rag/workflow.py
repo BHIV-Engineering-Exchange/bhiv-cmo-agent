@@ -29,7 +29,7 @@ logger = setup_logger("evidence_rag.workflow")
 
 
 def validate_reviewer_identity(reviewer: str) -> str:
-    """Validate and normalize human reviewer identity (AC-5, QA-001)."""
+    """Validate and normalize human reviewer identity (AC-5, QA-001, QA-NEW-003)."""
     if not reviewer or not reviewer.strip():
         raise ValueError("Reviewer identity cannot be blank. An explicit authorized reviewer is required.")
 
@@ -37,11 +37,33 @@ def validate_reviewer_identity(reviewer: str) -> str:
     norm = unicodedata.normalize("NFKC", reviewer).casefold().strip()
     norm = "".join(ch for ch in norm if unicodedata.category(ch) != "Cf").strip()
 
-    disallowed = {"prof_evaluator", "anonymous", "anonymous_reviewer", "default", ".", "none", "unknown"}
-    if norm in disallowed or len(norm) < 3:
+    # Disallow known placeholders and generic single-role identifiers
+    disallowed = {
+        "prof_evaluator", "anonymous", "anonymous_reviewer", "default", ".", "none",
+        "unknown", "evaluator", "admin", "test", "null", "undefined", "user", "root"
+    }
+
+    # Reject non-alphabetic strings or pure numbers/punctuation (e.g. '---', '123')
+    alpha_chars = sum(ch.isalpha() for ch in norm)
+    if alpha_chars < 3:
+        raise ValueError(
+            f"Reviewer identity '{reviewer.strip()}' contains insufficient alphabetic characters. "
+            "An explicit authorized human reviewer (e.g. 'Pratik Bhuwad - CMO Product Owner') is required."
+        )
+
+    # QA-NEW-003: Disallow known placeholders and generic single-role identifiers
+    if norm in disallowed:
         raise ValueError(
             f"Default reviewer placeholder '{reviewer.strip()}' is rejected. "
-            "An explicit authorized reviewer (e.g. 'Pratik Bhuwad - CMO Product Owner') is required."
+            "An explicit authorized human reviewer with full name or title (e.g. 'Pratik Bhuwad - CMO Product Owner') is required."
+        )
+
+    # QA-NEW-003: Require at least two words with alphabetic characters (e.g. 'First Last' or 'Role Title')
+    words = [w for w in re.split(r"[\s_\-]+", norm) if any(ch.isalpha() for ch in w)]
+    if len(words) < 2:
+        raise ValueError(
+            f"Reviewer identity '{reviewer.strip()}' is rejected. "
+            "An explicit authorized human reviewer with full name or title (e.g. 'Pratik Bhuwad - CMO Product Owner') is required."
         )
     return reviewer.strip()
 

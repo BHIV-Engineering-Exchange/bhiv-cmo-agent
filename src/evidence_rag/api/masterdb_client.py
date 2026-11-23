@@ -15,7 +15,7 @@ from evidence_rag.api.config import api_settings
 logger = setup_logger("evidence_rag.api.masterdb_client")
 
 
-class MasterDBPersistenceAdapter:
+class MasterDBPersistenceAdapter(RecordStore):
     """Hybrid persistence adapter targeting local MASTERDB capability with RecordStore fallback."""
 
     def __init__(
@@ -23,12 +23,15 @@ class MasterDBPersistenceAdapter:
         base_url: Optional[str] = None,
         capability_id: Optional[str] = None,
         application_id: Optional[str] = None,
+        storage_dir: Optional[Path] = None,
         record_store: Optional[RecordStore] = None
     ):
+        target_dir = storage_dir or (record_store.storage_dir if record_store else None)
+        super().__init__(storage_dir=target_dir)
         self.base_url = (base_url or api_settings.masterdb_url).rstrip("/")
         self.capability_id = capability_id or api_settings.masterdb_capability_id
         self.application_id = application_id or api_settings.masterdb_app_id
-        self.record_store = record_store or RecordStore()
+        self.record_store = self
 
     def check_connection(self) -> Dict[str, Any]:
         """Probe MASTERDB health and capability registration."""
@@ -122,7 +125,7 @@ class MasterDBPersistenceAdapter:
 
     def save_record(self, record: WorkflowRecord) -> WorkflowRecord:
         """Persist workflow record to local store and sync audit event if MASTERDB is online."""
-        saved = self.record_store.save_record(record)
+        saved = super().save_record(record)
         # Attempt non-blocking audit sync to Pravah if configured
         try:
             self._sync_audit_event(record)
@@ -144,16 +147,22 @@ class MasterDBPersistenceAdapter:
 
     def get_record(self, request_id: str) -> Optional[WorkflowRecord]:
         """Fetch audit record by request ID."""
-        return self.record_store.get_record(request_id)
+        return super().get_record(request_id)
 
     def list_records(self) -> List[WorkflowRecord]:
         """List all stored workflow records."""
-        return self.record_store.list_records()
+        return super().list_records()
 
     def record_decision(
         self,
         request_id: str,
         decision: ApprovalDecision
     ) -> Optional[WorkflowRecord]:
-        """Record human manager approval or rejection."""
-        return self.record_store.record_decision(request_id, decision)
+        """Record human manager approval or rejection and sync audit event to MASTERDB."""
+        updated = super().record_decision(request_id, decision)
+        if updated:
+            try:
+                self._sync_audit_event(updated)
+            except Exception as e:
+                logger.debug(f"Optional MASTERDB decision audit sync omitted: {e}")
+        return updated

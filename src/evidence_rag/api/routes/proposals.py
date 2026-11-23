@@ -145,6 +145,13 @@ def reject_proposal(
             detail=f"Proposal '{proposal_id}' has already been finalized with status '{record.status.value}'."
         )
 
+    # State transition validity check (QA-NEW-002: cannot reject zero-evidence proposals)
+    if record.status == WorkflowStatus.INSUFFICIENT_EVIDENCE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Proposal '{proposal_id}' is in state 'INSUFFICIENT_EVIDENCE' and cannot be rejected."
+        )
+
     try:
         clean_reviewer = validate_reviewer_identity(req.reviewer_identity)
     except ValueError as e:
@@ -178,8 +185,29 @@ def replay_proposal(
             detail=f"Proposal record '{proposal_id}' not found for replay."
         )
 
+    # Store prior decision state before replay re-evaluation (QA-NEW-002)
+    prior_status = record.status
+    prior_approval = record.approval
+    prior_history = list(record.history)
+
     # Re-evaluate using original request payload
     replayed = workflow.evaluate_proposal(record.request)
+
+    # If the record had already been finalized (APPROVED or REJECTED), preserve that decision
+    if prior_status in (WorkflowStatus.APPROVED, WorkflowStatus.REJECTED):
+        replayed.status = prior_status
+        replayed.approval = prior_approval
+        replayed.history.extend([
+            h for h in prior_history if h.get("action") in ("HUMAN_APPROVED", "HUMAN_REJECTED")
+        ])
+        replayed.history.append({
+            "action": "REPLAY_AUDITED",
+            "trace_id": replayed.trace_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "notes": f"Deterministic replay re-evaluation executed; preserved prior final decision '{prior_status.value}'."
+        })
+        replayed = workflow.record_store.save_record(replayed)
+
     return replayed
 
 

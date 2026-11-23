@@ -27,7 +27,7 @@ def get_workflow() -> DecisionWorkflow:
     if _workflow_instance is None:
         adapter = get_persistence_adapter()
         _workflow_instance = DecisionWorkflow(
-            record_store=adapter.record_store
+            record_store=adapter
         )
         _workflow_instance.ensure_index()
     return _workflow_instance
