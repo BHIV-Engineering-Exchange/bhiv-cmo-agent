@@ -606,7 +606,7 @@
 
       <div class="field">
         <label for="inpBudget">3. Planned Budget (USD)</label>
-        <input type="number" id="inpBudget" value="30000" min="0" step="500" onchange="recordChange('Budget')" />
+        <input type="number" id="inpBudget" value="30000" min="1" max="100000" step="500" onchange="recordChange('Budget')" />
         <div class="hint">Test input only. Entering a number here never spends real money.</div>
       </div>
 
@@ -968,6 +968,7 @@
     document.getElementById('s5-status-label').textContent = state.finalStatus;
     document.getElementById('s5-approval-form').style.display = state.finalStatus === 'INSUFFICIENT_EVIDENCE' ? 'none' : 'block';
     document.getElementById('s5-final-box').style.display = 'none';
+    document.getElementById('s5-error-banner').classList.remove('show');
     state.finalized = false;
     goTo(4);
   }
