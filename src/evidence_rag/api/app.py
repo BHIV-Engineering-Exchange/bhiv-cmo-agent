@@ -1,8 +1,10 @@
 """FastAPI application factory for the CMO Agent Path B microservice."""
 from contextlib import asynccontextmanager
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from evidence_rag.api.config import api_settings
 from evidence_rag.api.routes import health_router, query_router, proposals_router
@@ -56,6 +58,28 @@ def create_app() -> FastAPI:
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(query_router, prefix="/api/v1")
     app.include_router(proposals_router, prefix="/api/v1")
+
+    # Static UI directory and root dashboard route
+    static_dir = Path(__file__).resolve().parent / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+    @app.get("/", include_in_schema=False)
+    @app.get("/ui", include_in_schema=False)
+    def serve_dashboard_ui():
+        """Serve the CMO Agent Dashboard UI at root URL."""
+        index_file = static_dir / "index.html"
+        if index_file.exists():
+            return FileResponse(str(index_file))
+        return JSONResponse(
+            content={
+                "service": api_settings.api_title,
+                "version": api_settings.api_version,
+                "status": "online",
+                "docs_url": "/docs",
+                "health_url": "/health"
+            }
+        )
 
     # Global exception handler for ValueError
     @app.exception_handler(ValueError)
