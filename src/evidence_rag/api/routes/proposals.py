@@ -145,11 +145,15 @@ def reject_proposal(
             detail=f"Proposal '{proposal_id}' has already been finalized with status '{record.status.value}'."
         )
 
-    # State transition validity check (QA-NEW-002: cannot reject zero-evidence proposals)
-    if record.status == WorkflowStatus.INSUFFICIENT_EVIDENCE:
+    # State transition validity check (QA-002 / QA-NEW-002: allow rejecting valid pending or conflicted proposals)
+    if record.status not in (
+        WorkflowStatus.AWAITING_APPROVAL,
+        WorkflowStatus.RECOMMENDATION_READY,
+        WorkflowStatus.CONFLICT_DETECTED,
+    ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Proposal '{proposal_id}' is in state 'INSUFFICIENT_EVIDENCE' and cannot be rejected."
+            detail=f"Proposal '{proposal_id}' is in state '{record.status.value}' and cannot be rejected."
         )
 
     try:

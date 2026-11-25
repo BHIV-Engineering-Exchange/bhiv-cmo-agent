@@ -114,11 +114,16 @@ class RecordStore:
                 f"'{record.status.value}'. Duplicate decisions are prohibited."
             )
 
-        # Verify that record was in an approvable state (QA-002 fix)
-        if decision.decision.upper() == "APPROVED" and record.status not in (
+        # Verify that record was in a valid state for the requested decision (QA-002 fix)
+        dec_upper = decision.decision.upper()
+        approvable = (WorkflowStatus.AWAITING_APPROVAL, WorkflowStatus.RECOMMENDATION_READY)
+        rejectable = (
             WorkflowStatus.AWAITING_APPROVAL,
-            WorkflowStatus.RECOMMENDATION_READY
-        ):
+            WorkflowStatus.RECOMMENDATION_READY,
+            WorkflowStatus.CONFLICT_DETECTED,
+        )
+        allowed_statuses = approvable if dec_upper == "APPROVED" else rejectable
+        if record.status not in allowed_statuses:
             raise ValueError(
                 f"Cannot record decision on request '{request_id}' with status '{record.status.value}'. "
                 "Request must be in AWAITING_APPROVAL or RECOMMENDATION_READY."

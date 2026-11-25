@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; connect-src 'self'; script-src 'self' 'unsafe-inline'; object-src 'none';" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMO Agent V2 — Marketing Intelligence & Governance (BIQOS / CXO Suite)</title>
   <style>
@@ -54,25 +55,29 @@
       --danger-text: #7e0a16;
       --shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     }
-    body.large-text { font-size: 118%; }
+    body.large-text { font-size: 19px; }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: var(--bg-canvas);
       color: var(--text-primary);
-      line-height: 1.5;
+      line-height: 1.55;
+      font-size: 16px;
       min-height: 100vh;
     }
     .topbar {
       background: var(--bg-panel);
       border-bottom: 1px solid var(--border);
-      padding: 12px 20px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 20;
     }
     .brand {
       display: flex;
@@ -82,8 +87,8 @@
       letter-spacing: 0.02em;
     }
     .brand-dot {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 3px;
       background: linear-gradient(135deg, #f46800, #ffb357);
       display: inline-block;
@@ -110,17 +115,17 @@
       gap: 8px;
     }
     button, .btn {
-      min-height: 44px;
-      padding: 8px 14px;
+      min-height: 48px;
+      padding: 10px 16px;
       border-radius: var(--radius);
       border: 1px solid transparent;
-      font-size: 0.92em;
+      font-size: 0.94em;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       transition: background 0.15s ease, border-color 0.15s ease;
     }
     button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
@@ -132,47 +137,47 @@
     .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
     .btn-secondary { background: var(--bg-panel-elev); color: var(--text-primary); border-color: var(--border-strong); }
     .btn-secondary:hover { background: var(--border); }
-    .btn-quiet { background: transparent; color: var(--text-secondary); border-color: var(--border); min-height: 38px; padding: 4px 10px; font-size: 0.84em; }
+    .btn-quiet { background: transparent; color: var(--text-secondary); border-color: var(--border); min-height: 44px; padding: 6px 12px; font-size: 0.85em; }
     .btn-quiet:hover { background: var(--bg-panel-elev); color: var(--text-primary); border-color: var(--border-strong); }
     .btn-danger { background: var(--danger-bg); color: var(--danger-text); border-color: var(--danger-border); }
     .btn-danger:hover { background: rgba(242, 73, 92, 0.22); }
-    .wrap { max-width: 880px; margin: 20px auto 60px; padding: 0 16px; }
-    .stepper { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px; }
+    .wrap { max-width: 880px; margin: 22px auto 64px; padding: 0 18px; }
+    .stepper { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 18px; }
     .step-pill {
       background: var(--bg-panel);
       border: 1px solid var(--border);
       border-top: 3px solid var(--border);
       border-radius: var(--radius);
-      padding: 8px 6px;
+      padding: 10px 8px;
       text-align: center;
       font-size: 0.82em;
       color: var(--text-secondary);
       cursor: pointer;
-      min-height: 44px;
+      min-height: 48px;
     }
     .step-pill.active { border-color: var(--accent-blue); border-top: 3px solid var(--accent-orange); background: var(--bg-panel-elev); color: var(--text-primary); font-weight: 700; }
     .step-pill.done { border-color: var(--ok-border); border-top: 3px solid var(--ok-border); background: var(--ok-bg); color: var(--ok-text); }
-    .banner { padding: 10px 14px; border-radius: var(--radius); margin-bottom: 14px; border: 1px solid var(--border); border-left: 4px solid var(--accent-blue); display: none; }
+    .banner { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px; border: 1px solid var(--border); border-left: 4px solid var(--accent-blue); display: none; }
     .banner.show { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
     .banner-info { background: var(--accent-blue-soft); border-color: var(--accent-blue); color: var(--text-primary); }
     .banner-warn { background: var(--warn-bg); border-color: var(--warn-border); border-left-color: var(--accent-orange); color: var(--warn-text); }
     .banner-danger { background: var(--danger-bg); border-color: var(--danger-border); border-left-color: var(--danger-border); color: var(--danger-text); }
     .panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); display: none; overflow: hidden; }
     .panel.active { display: block; }
-    .panel-header { background: var(--bg-panel-elev); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .panel-header { background: var(--bg-panel-elev); border-bottom: 1px solid var(--border); padding: 12px 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
     .panel-kicker { font-size: 0.78em; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-orange); }
     .panel-meta { font-size: 0.8em; color: var(--text-secondary); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .panel-body { padding: 22px 20px; }
-    h1 { margin: 0 0 8px; font-size: 1.45em; line-height: 1.25; }
-    h2 { margin: 16px 0 8px; font-size: 1.05em; }
-    p.lead { margin: 0 0 16px; color: var(--text-secondary); }
-    .help-box { background: var(--accent-blue-soft); border: 1px solid var(--accent-blue); border-left: 4px solid var(--accent-blue); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .panel-body { padding: 24px 22px; }
+    h1 { margin: 0 0 8px; font-size: 1.48em; line-height: 1.28; }
+    h2 { margin: 16px 0 8px; font-size: 1.08em; }
+    p.lead { margin: 0 0 18px; color: var(--text-secondary); }
+    .help-box { background: var(--accent-blue-soft); border: 1px solid var(--accent-blue); border-left: 4px solid var(--accent-blue); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
     .help-box.hidden { display: none; }
-    .goal-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 14px 0 18px; }
+    .goal-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 14px 0 20px; }
     .goal-option {
       text-align: left;
       width: 100%;
-      padding: 12px 16px;
+      padding: 14px 16px;
       border: 1px solid var(--border-strong);
       border-left: 4px solid var(--border-strong);
       border-radius: var(--radius);
@@ -184,29 +189,29 @@
     }
     .goal-option:hover { border-color: var(--accent-blue); }
     .goal-option.selected { border-color: var(--accent-blue); border-left: 4px solid var(--accent-orange); background: var(--accent-blue-soft); }
-    .goal-title { font-weight: 700; color: var(--text-primary); font-size: 0.98em; }
-    .goal-desc { font-weight: 400; color: var(--text-secondary); font-size: 0.86em; }
+    .goal-title { font-weight: 700; color: var(--text-primary); font-size: 1em; }
+    .goal-desc { font-weight: 400; color: var(--text-secondary); font-size: 0.88em; }
     .field { margin-bottom: 16px; }
     label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
-    .hint { font-size: 0.84em; color: var(--text-secondary); margin-top: 4px; }
-    input[type="text"], input[type="number"], select, textarea {
+    .hint { font-size: 0.85em; color: var(--text-secondary); margin-top: 4px; }
+    input[type="text"], input[type="number"], input[type="password"], select, textarea {
       width: 100%;
-      min-height: 44px;
+      min-height: 48px;
       padding: 10px 12px;
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      font-size: 0.95em;
+      font-size: 0.98em;
       color: var(--text-primary);
       background: var(--bg-input);
     }
-    textarea { min-height: 80px; resize: vertical; }
+    textarea { min-height: 84px; resize: vertical; }
     details { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin: 14px 0; background: var(--bg-panel-elev); }
-    summary { font-weight: 600; cursor: pointer; min-height: 32px; display: flex; align-items: center; color: var(--text-primary); }
+    summary { font-weight: 600; cursor: pointer; min-height: 34px; display: flex; align-items: center; color: var(--text-primary); }
     .kpi-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
     .kpi-tile { background: var(--bg-panel-elev); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
-    .kpi-label { font-size: 0.76em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-label { font-size: 0.78em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
     .kpi-value { font-size: 1.15em; font-weight: 700; margin-top: 4px; color: var(--text-primary); }
-    .section-box { border: 1px solid var(--border); border-left: 4px solid var(--border-strong); border-radius: var(--radius); padding: 12px 14px; margin: 12px 0; background: var(--bg-panel-elev); }
+    .section-box { border: 1px solid var(--border); border-left: 4px solid var(--border-strong); border-radius: var(--radius); padding: 14px 16px; margin: 12px 0; background: var(--bg-panel-elev); }
     .section-box.warn { background: var(--warn-bg); border-color: var(--warn-border); border-left-color: var(--accent-orange); }
     .section-box.ok { background: var(--ok-bg); border-color: var(--ok-border); border-left-color: var(--ok-border); }
     .section-box.danger { background: var(--danger-bg); border-color: var(--danger-border); border-left-color: var(--danger-border); }
@@ -216,13 +221,13 @@
       color: var(--accent-orange);
       border: 1px solid var(--border-strong);
       border-radius: 4px;
-      padding: 1px 6px;
+      padding: 1px 7px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.82em;
+      font-size: 0.84em;
       font-weight: 700;
       margin-right: 6px;
     }
-    .action-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .action-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
     .action-left { display: flex; flex-wrap: wrap; gap: 8px; }
     .modal-backdrop {
       position: fixed;
@@ -244,11 +249,13 @@
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
-      padding: 20px;
+      padding: 22px;
       box-shadow: var(--shadow);
     }
-    .control-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .mono-log { background: #0b0c0e; color: #8be07e; border: 1px solid var(--border); padding: 12px; border-radius: var(--radius); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82em; overflow-x: auto; white-space: pre-wrap; }
+    .control-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .token-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+    .token-row input { flex: 1 1 220px; }
+    .mono-log { background: #0b0c0e; color: #8be07e; border: 1px solid var(--border); padding: 12px; border-radius: var(--radius); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.84em; overflow-x: auto; white-space: pre-wrap; }
     @media (max-width: 640px) {
       .kpi-strip { grid-template-columns: 1fr; }
       .stepper { font-size: 0.72em; }
@@ -276,8 +283,8 @@
     <button class="btn-quiet" id="btnReadAloud" onclick="readCurrentScreen()" title="Read screen aloud">
       🔊 Read Aloud
     </button>
-    <button class="btn-quiet" onclick="toggleLargeText()">Aa Larger Text</button>
-    <button class="btn-quiet" onclick="toggleContrast()">◐ Contrast</button>
+    <button class="btn-quiet" id="btnTextSize" onclick="toggleLargeText()">Aa Larger Text</button>
+    <button class="btn-quiet" id="btnContrast" onclick="toggleContrast()">◐ Contrast</button>
     <button class="btn-quiet" onclick="openControls()" id="btnUserControls">⚙ Controls &amp; Privacy</button>
   </div>
 </header>
@@ -298,6 +305,11 @@
     <button class="btn-quiet" onclick="togglePauseAI()">Resume AI</button>
   </div>
 
+  <div class="banner banner-danger" id="authBanner" role="alert">
+    <span id="authBannerMsg"><strong>Authentication Required:</strong> Backend rejected the request (401/403). Enter a valid Bearer token in Controls &amp; Privacy.</span>
+    <button class="btn-quiet" onclick="openControls('token')">Set Bearer Token</button>
+  </div>
+
   <div class="banner banner-info" id="undoBanner" role="status">
     <span id="undoMsg">Change saved.</span>
     <button class="btn-quiet" onclick="undoLastAction()">↩ Undo</button>
@@ -315,21 +327,21 @@
 
       <div class="help-box" id="help-1">
         <div><strong>First time here?</strong> Select the first option ($30,000 LinkedIn plan) to inspect real policy grounding and channel cap verification.</div>
-        <button class="btn-quiet" onclick="dismissHelp('help-1')">Dismiss</button>
+        <button class="btn-quiet" onclick="dismissHelp('help-1')" aria-label="Dismiss tip">Dismiss</button>
       </div>
 
-      <div class="goal-grid" role="radiogroup">
-        <button class="goal-option selected" id="goal-linkedin" onclick="selectGoal('linkedin')">
+      <div class="goal-grid" role="radiogroup" aria-label="Choose your goal">
+        <button class="goal-option selected" id="goal-linkedin" role="radio" aria-checked="true" onclick="selectGoal('linkedin')">
           <span class="goal-title">Plan an Enterprise LinkedIn Lead Gen Campaign (Recommended)</span>
           <span class="goal-desc">Evaluates $30,000 media spend against DOC-MKT-002 policy limit and flags over-cap variance.</span>
         </button>
 
-        <button class="goal-option" id="goal-tv" onclick="selectGoal('tv')">
+        <button class="goal-option" id="goal-tv" role="radio" aria-checked="false" onclick="selectGoal('tv')">
           <span class="goal-title">Check a Linear Television (TV) Ad Campaign</span>
           <span class="goal-desc">Tests semantic abstention safeguard (DEFECT-SEMANTIC-001) — halts safely when company data is absent.</span>
         </button>
 
-        <button class="goal-option" id="goal-custom" onclick="selectGoal('custom')">
+        <button class="goal-option" id="goal-custom" role="radio" aria-checked="false" onclick="selectGoal('custom')">
           <span class="goal-title">Start a Custom Campaign Draft</span>
           <span class="goal-desc">Enter your own campaign name, acquisition channel, and planned budget freely.</span>
         </button>
@@ -337,7 +349,7 @@
 
       <div class="action-bar">
         <div class="action-left">
-          <button class="btn-secondary" onclick="openControls()">Privacy &amp; Audit State</button>
+          <button class="btn-secondary" onclick="openControls()">Pause or Manage Privacy</button>
         </div>
         <button class="btn-primary" onclick="goTo(2)">Continue to Next Step →</button>
       </div>
@@ -386,11 +398,12 @@
     </div>
     <div class="panel-body">
       <h1 id="s3-title">Enter Campaign Parameters</h1>
-      <p class="lead">Specify target channel and budget. Entering a number here never executes live transactions.</p>
+      <p class="lead">Just three plain boxes. Specify target channel and budget — entering a number here never executes live transactions.</p>
 
       <div class="field">
         <label for="inpTitle">1. Campaign Title</label>
         <input type="text" id="inpTitle" value="Q4 Enterprise LinkedIn Lead Gen Campaign" onchange="recordChange('Campaign Title')" />
+        <div class="hint">Plain name so your team recognizes this plan.</div>
       </div>
 
       <div class="field">
@@ -399,6 +412,7 @@
           <option value="Paid Social (LinkedIn Ads)" selected>LinkedIn Ads (Approved &bull; $15,000 policy cap)</option>
           <option value="Paid Search (Google Ads)">Google Paid Search (Approved &bull; $20,000 policy cap)</option>
           <option value="Content Marketing">Content Marketing &bull; Whitepapers ($7,500 policy cap)</option>
+          <option value="Influencer & KOL Partnerships">Influencer &amp; KOL Partnerships (Policy conflict check)</option>
           <option value="Linear TV Broadcasting">Linear TV Broadcasting (Unsupported channel)</option>
         </select>
       </div>
@@ -406,12 +420,25 @@
       <div class="field">
         <label for="inpBudget">3. Planned Budget ($ USD)</label>
         <input type="number" id="inpBudget" value="30000" min="1" max="100000" step="500" onchange="recordChange('Planned Budget')" />
-        <div class="hint">Governed by DOC-MKT-002 policy spend limits.</div>
+        <div class="hint">Test input only. Governed by DOC-MKT-002 policy spend limits ($50,000 maximum).</div>
       </div>
+
+      <details>
+        <summary>Optional details (Audience &amp; Business Outcome)</summary>
+        <div class="field" style="margin-top: 12px;">
+          <label for="inpAudience">Who do you want to reach?</label>
+          <input type="text" id="inpAudience" value="Engineering Managers, VP of Engineering, CTOs" onchange="recordChange('Audience')" />
+        </div>
+        <div class="field" style="margin-bottom: 0;">
+          <label for="inpGoalText">Main business outcome</label>
+          <textarea id="inpGoalText" onchange="recordChange('Goal')">Drive a 25% increase in sales-qualified enterprise leads (SQLs).</textarea>
+        </div>
+      </details>
 
       <div class="action-bar">
         <div class="action-left">
           <button class="btn-secondary" onclick="goTo(2)">← Back</button>
+          <button class="btn-quiet" id="btnUndoStep3" onclick="undoLastAction()">↩ Undo</button>
           <button class="btn-quiet" onclick="safeCancel()">Cancel</button>
         </div>
         <button class="btn-primary" id="btnEvaluate" onclick="evaluatePlan()">Check Facts &amp; Policy →</button>
@@ -432,21 +459,29 @@
       <div class="kpi-strip" id="s4-kpi-strip"></div>
       <div class="section-box" id="s4-verdict-box"></div>
 
-      <h2>Verified Company Policy &amp; Benchmark Facts</h2>
-      <ul id="s4-facts" style="padding-left: 20px;"></ul>
+      <div class="section-box">
+        <h2 style="margin-top: 0;">Verified Company Policy &amp; Benchmark Facts</h2>
+        <ul id="s4-facts" style="margin: 8px 0 0; padding-left: 20px;"></ul>
+      </div>
 
-      <h2>What Is Unknown (Not Guessed)</h2>
-      <ul id="s4-unknowns" style="padding-left: 20px;"></ul>
+      <div class="section-box">
+        <h2 style="margin-top: 0;">What Is Unknown (Not Guessed)</h2>
+        <ul id="s4-unknowns" style="margin: 8px 0 0; padding-left: 20px;"></ul>
+      </div>
 
       <details>
         <summary>Plain-Language AI Explanation</summary>
-        <p id="s4-ai-explain" style="margin: 8px 0 0; color: var(--text-secondary);"></p>
+        <div id="s4-ai-explain" style="margin: 8px 0 0; color: var(--text-secondary);"></div>
       </details>
+
+      <div class="section-box ok">
+        <strong>Human Approval Required:</strong> This assistant can only advise. It cannot publish ads, send emails, or spend money. Next, a named human manager must review and decide.
+      </div>
 
       <div class="action-bar">
         <div class="action-left">
           <button class="btn-secondary" onclick="goTo(3)">← Edit Plan</button>
-          <button class="btn-quiet" onclick="safeCancel()">Cancel</button>
+          <button class="btn-quiet" onclick="safeCancel()">Cancel Safely</button>
         </div>
         <button class="btn-primary" id="btnToApproval" onclick="goTo(5)">Go to Human Approval →</button>
       </div>
@@ -463,6 +498,10 @@
       <h1 id="s5-title">Managerial Approval Gate</h1>
       <p class="lead">No automated system has publishing authority. An authorized human manager must record a decision.</p>
 
+      <div class="section-box warn" id="s5-hardstop-notice">
+        <strong>Hard Stop Active (Zero Side Effects):</strong> Nothing has been published, activated, or billed. Even after approval here, real-world campaign execution remains strictly blocked pending separate Workflow Executor authorization.
+      </div>
+
       <div class="banner banner-danger" id="s5-error-banner" role="alert">
         <span id="s5-error-text">Reviewer identity rejected.</span>
       </div>
@@ -470,13 +509,13 @@
       <div id="s5-approval-form">
         <div class="field">
           <label for="inpReviewer">Authorized Reviewer Identity</label>
-          <input type="text" id="inpReviewer" value="Pratik Bhuwad - CMO Product Owner" placeholder="e.g. Pratik Bhuwad - CMO Product Owner" />
-          <div class="hint">Must be a named manager. Placeholders (e.g. "Prof_Evaluator", "Anonymous") are strictly rejected.</div>
+          <input type="text" id="inpReviewer" value="" placeholder="Example: Pratik Bhuwad - CMO Product Owner" />
+          <div class="hint">Must be a named manager (at least two words). Placeholders (e.g. "Prof_Evaluator", "Anonymous") are strictly rejected.</div>
         </div>
 
         <div class="field">
           <label for="inpNotes">Decision Audit Notes &amp; Conditions</label>
-          <textarea id="inpNotes" placeholder="Enter conditions or justification (minimum 5 characters)">Approved under condition that spend is capped at $15,000 for initial flight; remaining $15,000 contingent on CAC <= $35.00.</textarea>
+          <textarea id="inpNotes" placeholder="Example: Approved with condition to reallocate excess spend or cap initial flight (minimum 5 characters)."></textarea>
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap;">
@@ -485,6 +524,7 @@
         </div>
       </div>
 
+      <div class="section-box danger" id="s5-blocked-notice" style="display: none;"></div>
       <div id="s5-final-box" style="display: none; margin-top: 18px;"></div>
 
       <div class="action-bar">
@@ -501,15 +541,26 @@
 <!-- MODAL 1: CONTROLS & PRIVACY DRAWER -->
 <div class="modal-backdrop" id="controlsModal" role="dialog" aria-modal="true" aria-labelledby="ctrlTitle">
   <div class="modal">
-    <h2 id="ctrlTitle" style="margin-top: 0;">User Controls, Privacy &amp; Trace Audit</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+      <h2 id="ctrlTitle" style="margin:0;">User Controls, Privacy &amp; Trace Audit</h2>
+      <button class="btn-quiet" onclick="closeControls()">✕ Close</button>
+    </div>
     <p style="color: var(--text-secondary); margin-bottom: 14px;">Every action is auditable, safe to pause, and non-manipulative.</p>
 
     <div class="control-row">
       <div>
         <strong>Pause AI Suggestions</strong>
-        <div class="hint">Suppresses automated scoring while keeping your draft intact.</div>
+        <div class="hint">Suppresses automated scoring and Policy AI queries while keeping your draft intact.</div>
       </div>
       <button class="btn-secondary" id="ctrlPauseBtn" onclick="togglePauseAI()">Pause</button>
+    </div>
+
+    <div class="control-row">
+      <div>
+        <strong>Mute Helper Tips &amp; Prompts</strong>
+        <div class="hint">Hide onboarding callouts across all screens.</div>
+      </div>
+      <button class="btn-secondary" id="ctrlMuteBtn" onclick="toggleMuteTips()">Mute Tips</button>
     </div>
 
     <div class="control-row">
@@ -518,6 +569,19 @@
         <div class="hint">Toggle access to internal policy &amp; benchmark documents.</div>
       </div>
       <button class="btn-secondary" id="ctrlPermBtn" onclick="togglePermission()">Revoke</button>
+    </div>
+
+    <div class="control-row" style="flex-direction: column; align-items: stretch;">
+      <div>
+        <strong>API Bearer Token (Session Memory Only)</strong>
+        <div class="hint">Enter a TANTRA Bearer token when backend API authentication is enabled. Never hardcoded or stored on disk; omitted if blank.</div>
+      </div>
+      <div class="token-row">
+        <input type="password" id="inpAuthToken" autocomplete="off" placeholder="Paste Bearer token (without 'Bearer ' prefix)" />
+        <button class="btn-secondary" id="btnApplyToken" onclick="applyAuthToken()">Apply</button>
+        <button class="btn-quiet" id="btnClearToken" onclick="clearAuthToken()">Clear</button>
+      </div>
+      <div class="hint" id="authTokenStatus">Auth Header: Omitted (no token set)</div>
     </div>
 
     <div class="control-row">
@@ -540,7 +604,10 @@
 <!-- MODAL 2: ASK MARKETING POLICY AI (QA DRAWER) -->
 <div class="modal-backdrop" id="qaModal" role="dialog" aria-modal="true" aria-labelledby="qaTitle">
   <div class="modal">
-    <h2 id="qaTitle" style="margin-top: 0;">💬 Ask Marketing Policy AI</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+      <h2 id="qaTitle" style="margin:0;">💬 Ask Marketing Policy AI</h2>
+      <button class="btn-quiet" onclick="closeQAModal()">✕ Close</button>
+    </div>
     <p style="color: var(--text-secondary); margin-bottom: 12px;">Query company marketing policies and benchmarks grounded in verified knowledge documents.</p>
 
     <div class="field">
@@ -579,21 +646,74 @@
     corpusAllowed: true,
     isOverMax: false,
     isLiveApi: false,
-    backendStatus: 'CONNECTING'
+    backendStatus: 'CONNECTING',
+    authToken: '',
+    lastFocusedElement: null
   };
 
-  // Helper: Escape HTML to prevent XSS
   function escapeHtml(str) {
-    if (!str) return "";
+    if (str === null || str === undefined) return '';
     return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  // Probe backend status on load
+  function buildAuthHeaders(extraHeaders) {
+    const headers = Object.assign({}, extraHeaders || {});
+    const token = (state.authToken || '').trim();
+    if (token) {
+      headers['Authorization'] = 'Bearer ' + token;
+    }
+    return headers;
+  }
+
+  function showAuthError(message) {
+    const banner = document.getElementById('authBanner');
+    const msgEl = document.getElementById('authBannerMsg');
+    msgEl.innerHTML = '<strong>Authentication Required:</strong> ' + escapeHtml(message);
+    banner.classList.add('show');
+  }
+
+  function clearAuthError() {
+    document.getElementById('authBanner').classList.remove('show');
+  }
+
+  function isValidReviewerIdentity(reviewer) {
+    if (!reviewer || !reviewer.trim()) {
+      return { valid: false, reason: 'Reviewer identity cannot be blank. An explicit authorized human reviewer is required.' };
+    }
+    let norm = reviewer.normalize ? reviewer.normalize('NFKC') : reviewer;
+    norm = norm.toLowerCase().replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g, '').trim();
+    const disallowed = new Set([
+      'prof_evaluator', 'anonymous', 'anonymous_reviewer', 'default', '.', 'none',
+      'unknown', 'evaluator', 'admin', 'test', 'null', 'undefined', 'user', 'root'
+    ]);
+    const alphaCount = (norm.match(/[a-z]/g) || []).length;
+    if (alphaCount < 3) {
+      return {
+        valid: false,
+        reason: 'Reviewer identity rejected. Provide an explicit, named human reviewer (e.g. "Pratik Bhuwad - CMO Product Owner").'
+      };
+    }
+    if (disallowed.has(norm)) {
+      return {
+        valid: false,
+        reason: 'Reviewer identity rejected. Placeholders and anonymous strings are prohibited.'
+      };
+    }
+    const words = norm.split(/[\s_\-]+/).filter(w => /[a-z]/.test(w));
+    if (words.length < 2) {
+      return {
+        valid: false,
+        reason: 'Reviewer identity rejected. Enter an explicit full name or title (at least two words).'
+      };
+    }
+    return { valid: true, clean: reviewer.trim() };
+  }
+
   async function checkBackendHealth() {
     const badge = document.getElementById('backendBadge');
     try {
@@ -608,7 +728,7 @@
         return;
       }
     } catch (e) {
-      // Backend probe failed
+      // Backend unreachable; offline simulation mode remains active
     }
     state.isLiveApi = false;
     state.backendStatus = 'OFFLINE_MOCK';
@@ -629,44 +749,66 @@
       pill.classList.toggle('active', i === stepNum);
       pill.classList.toggle('done', i < stepNum);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined' && window.scrollTo) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   function selectGoal(type) {
     state.goal = type;
     ['linkedin', 'tv', 'custom'].forEach(g => {
-      document.getElementById('goal-' + g).classList.toggle('selected', g === type);
+      const el = document.getElementById('goal-' + g);
+      const selected = g === type;
+      el.classList.toggle('selected', selected);
+      el.setAttribute('aria-checked', selected ? 'true' : 'false');
     });
     const title = document.getElementById('inpTitle');
     const channel = document.getElementById('inpChannel');
     const budget = document.getElementById('inpBudget');
+    const audience = document.getElementById('inpAudience');
+    const goalText = document.getElementById('inpGoalText');
     const summary = document.getElementById('s2-summary');
 
     if (type === 'linkedin') {
       title.value = 'Q4 Enterprise LinkedIn Lead Gen Campaign';
       channel.value = 'Paid Social (LinkedIn Ads)';
       budget.value = 30000;
+      audience.value = 'Engineering Managers, VP of Engineering, CTOs';
+      goalText.value = 'Drive a 25% increase in sales-qualified enterprise leads (SQLs).';
       summary.innerHTML = 'You selected: <strong>Enterprise LinkedIn Lead Gen ($30,000 proposal)</strong>.';
     } else if (type === 'tv') {
       title.value = 'Q4 National Linear TV Brand Awareness Pilot';
       channel.value = 'Linear TV Broadcasting';
       budget.value = 25000;
+      audience.value = 'Broad enterprise & consumer broadcast audience';
+      goalText.value = 'Evaluate whether Linear TV has verified company benchmarks before allocating spend.';
       summary.innerHTML = 'You selected: <strong>Linear Television Ad (tests honest abstention when data is absent)</strong>.';
     } else {
       title.value = '';
       channel.value = 'Paid Search (Google Ads)';
       budget.value = 12000;
+      audience.value = 'Enterprise engineering & IT decision makers';
+      goalText.value = '';
       summary.innerHTML = 'You selected: <strong>Custom Campaign Draft</strong>.';
     }
+
+    state.history = [captureDraftSnapshot('Initial Goal')];
+    document.getElementById('undoBanner').classList.remove('show');
   }
 
-  function recordChange(fieldLabel) {
-    state.history.push({
+  function captureDraftSnapshot(fieldLabel) {
+    return {
       field: fieldLabel,
       title: document.getElementById('inpTitle').value,
       channel: document.getElementById('inpChannel').value,
-      budget: document.getElementById('inpBudget').value
-    });
+      budget: document.getElementById('inpBudget').value,
+      audience: document.getElementById('inpAudience').value,
+      goalText: document.getElementById('inpGoalText').value
+    };
+  }
+
+  function recordChange(fieldLabel) {
+    state.history.push(captureDraftSnapshot(fieldLabel));
     const b = document.getElementById('undoBanner');
     document.getElementById('undoMsg').textContent = `Updated ${fieldLabel}. You can undo this change.`;
     b.classList.add('show');
@@ -679,6 +821,8 @@
       document.getElementById('inpTitle').value = prev.title;
       document.getElementById('inpChannel').value = prev.channel;
       document.getElementById('inpBudget').value = prev.budget;
+      document.getElementById('inpAudience').value = prev.audience;
+      document.getElementById('inpGoalText').value = prev.goalText;
     } else {
       selectGoal(state.goal);
     }
@@ -690,152 +834,405 @@
     const budgetVal = document.getElementById('inpBudget').value;
     const budget = Number(budgetVal);
     const title = document.getElementById('inpTitle').value.trim() || 'Marketing Proposal';
+    const audience = document.getElementById('inpAudience').value.trim();
+    const goalText = document.getElementById('inpGoalText').value.trim();
 
-    if (!budgetVal || isNaN(budget) || budget <= 0) {
-      alert("Invalid budget: Please enter a planned budget greater than $0.");
+    if (!budgetVal || !Number.isFinite(budget) || budget <= 0) {
+      alert('Invalid budget: Please enter a planned budget greater than $0.');
       return;
     }
+
+    document.getElementById('s5-error-banner').classList.remove('show');
+    clearAuthError();
 
     const btn = document.getElementById('btnEvaluate');
     btn.disabled = true;
     btn.textContent = 'Evaluating with Policy Engine...';
 
-    // Try live API evaluation
     let apiData = null;
+    let apiError = null;
+
     if (state.isLiveApi && state.corpusAllowed) {
       try {
+        const detailParts = [
+          `Campaign proposal for ${channel} with requested budget of $${budget.toLocaleString()}.`
+        ];
+        if (audience) detailParts.push(`Target audience: ${audience}.`);
+        if (goalText) detailParts.push(`Business outcome: ${goalText}`);
+        if (channel.toLowerCase().includes('influencer')) {
+          detailParts.push('Allocate budget for influencer partnership spend ceiling and creator endorsements.');
+        }
+
         const payload = {
-          proposal_id: "REQ-" + Date.now().toString(36).toUpperCase(),
+          proposal_id: 'REQ-' + Date.now().toString(36).toUpperCase(),
           title: title,
-          proposal_text: `Campaign proposal for ${channel} with requested budget of $${budget.toLocaleString()}. Target enterprise acquisition.`,
+          proposal_text: detailParts.join(' '),
           requested_budget: budget,
           channel: channel,
-          submitted_by: "marketing_team"
+          submitted_by: 'marketing_team',
+          metadata: {
+            audience: audience || null,
+            business_outcome: goalText || null
+          }
         };
         const resp = await fetch('/api/v1/proposals/evaluate', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer mock-rs256-test-token'
-          },
+          headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify(payload)
         });
         if (resp.ok) {
           apiData = await resp.json();
           state.currentProposalId = apiData.request_id;
-          state.traceId = apiData.trace_id;
+          state.traceId = apiData.trace_id || state.traceId;
+        } else {
+          let detail = `Backend returned HTTP ${resp.status}.`;
+          try {
+            const errBody = await resp.json();
+            if (errBody && errBody.detail) detail = errBody.detail;
+          } catch (_) {}
+          if (resp.status === 401 || resp.status === 403) {
+            showAuthError(detail);
+          }
+          apiError = { status: resp.status, detail };
         }
       } catch (err) {
-        console.warn("Live API evaluation failed; falling back to local engine:", err);
+        // Network failure: degrade cleanly to offline simulation
+        state.isLiveApi = false;
+        state.backendStatus = 'OFFLINE_MOCK';
       }
     }
 
     btn.disabled = false;
     btn.textContent = 'Check Facts & Policy →';
 
-    renderEvaluationResults(channel, budget, apiData);
+    renderEvaluationResults(channel, budget, apiData, apiError);
     goTo(4);
   }
 
-  function renderEvaluationResults(channel, budget, apiData) {
+  function formatCitationTag(fact) {
+    if (!fact) return 'DOC';
+    const cit = fact.citation;
+    if (cit && typeof cit === 'object') {
+      return cit.chunk_id || cit.document_id || fact.source_chunk_id || fact.source_document_id || 'DOC';
+    }
+    return fact.source_chunk_id || fact.source_document_id || (typeof cit === 'string' ? cit : 'DOC');
+  }
+
+  function renderEvaluationResults(channel, budget, apiData, apiError) {
     const kpiStrip = document.getElementById('s4-kpi-strip');
     const verdictBox = document.getElementById('s4-verdict-box');
     const factsEl = document.getElementById('s4-facts');
     const unknownsEl = document.getElementById('s4-unknowns');
     const explainEl = document.getElementById('s4-ai-explain');
     const btnToApproval = document.getElementById('btnToApproval');
+    const blockedNotice = document.getElementById('s5-blocked-notice');
+
     document.getElementById('s4-trace-meta').textContent = 'Trace ID: ' + state.traceId;
+    blockedNotice.style.display = 'none';
 
     if (!state.corpusAllowed) {
+      state.finalStatus = 'PERMISSION_REVOKED';
+      state.isOverMax = false;
       kpiStrip.innerHTML = `
         <div class="kpi-tile"><div class="kpi-label">Corpus Access</div><div class="kpi-value" style="color:var(--danger-text)">REVOKED</div></div>
         <div class="kpi-tile"><div class="kpi-label">Policy Check</div><div class="kpi-value">SKIPPED</div></div>
         <div class="kpi-tile"><div class="kpi-label">Live Execution</div><div class="kpi-value">DISABLED</div></div>
       `;
       verdictBox.className = 'section-box danger';
-      verdictBox.innerHTML = '<strong>Permission Revoked:</strong> Corpus read access is turned off in Controls &amp; Privacy.';
-      factsEl.innerHTML = '<li>No documents accessed.</li>';
-      unknownsEl.innerHTML = '<li>Policy rules could not be checked.</li>';
+      verdictBox.innerHTML = '<strong>Permission Revoked:</strong> Read-only corpus access is turned off in <em>Controls &amp; Privacy</em>. Restore permission to run policy checks.';
+      factsEl.innerHTML = '<li>No documents accessed (respecting your permission setting).</li>';
+      unknownsEl.innerHTML = '<li>Policy rules and benchmarks could not be checked while access is revoked.</li>';
       explainEl.textContent = 'Data access revoked by user.';
       btnToApproval.disabled = true;
+      btnToApproval.textContent = 'Approval Blocked (Permission Revoked)';
+      configureScreen5Gate(false, 'Corpus read permission is revoked. Restore access and re-evaluate before recording a decision.');
       return;
     }
 
-    btnToApproval.disabled = false;
-
-    // Linear TV honest abstention
-    if (channel.toLowerCase().includes('linear tv') || (apiData && apiData.status === 'INSUFFICIENT_EVIDENCE')) {
-      state.finalStatus = 'INSUFFICIENT_EVIDENCE';
+    if (apiError) {
+      state.finalStatus = 'API_ERROR_' + apiError.status;
       state.isOverMax = false;
       kpiStrip.innerHTML = `
-        <div class="kpi-tile"><div class="kpi-label">Decision Status</div><div class="kpi-value" style="color:var(--danger-text)">ABSTAINED</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Verified Benchmarks</div><div class="kpi-value">null (None)</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Execution Seam</div><div class="kpi-value">BLOCKED</div></div>
+        <div class="kpi-tile"><div class="kpi-label">API Status</div><div class="kpi-value" style="color:var(--danger-text)">HTTP ${escapeHtml(apiError.status)}</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Policy Check</div><div class="kpi-value">FAILED CLOSED</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Live Execution</div><div class="kpi-value">BLOCKED</div></div>
       `;
       verdictBox.className = 'section-box danger';
-      verdictBox.innerHTML = '<strong>Status: INSUFFICIENT_EVIDENCE (Honest Abstention)</strong><br/>Company records contain zero performance benchmarks for Linear TV. The system refuses to hallucinate metrics (<code>DEFECT-SEMANTIC-001</code>).';
-      factsEl.innerHTML = '<li><span class="cite-tag">DOC-MKT-003-C006</span> No corporate performance data, conversion benchmarks, or audience research exists for linear television broadcasting.</li>';
-      unknownsEl.innerHTML = '<li>Expected Linear TV CTR, CAC, conversion rate, and ROAS are strictly <strong>null (unknown)</strong>.</li>';
-      explainEl.textContent = 'System abstains with INSUFFICIENT_EVIDENCE because no benchmark data exists.';
-      btnToApproval.textContent = 'Review Abstention Record →';
-    } else {
-      const caps = {
-        'Paid Social (LinkedIn Ads)': 15000,
-        'Paid Search (Google Ads)': 20000,
-        'Content Marketing': 7500
-      };
-      const cap = caps[channel] || 15000;
-      const overCap = budget > cap;
-      const overMax = budget > 50000;
-      state.isOverMax = overMax;
-      state.finalStatus = 'AWAITING_APPROVAL';
+      verdictBox.innerHTML = `<strong>Backend Request Rejected (HTTP ${escapeHtml(apiError.status)}):</strong> ${escapeHtml(apiError.detail)}`;
+      factsEl.innerHTML = '<li>No evaluation data returned due to backend error / authentication failure.</li>';
+      unknownsEl.innerHTML = '<li>Resolve the API authentication or validation error and re-run Check Facts &amp; Policy.</li>';
+      explainEl.textContent = apiError.detail;
+      btnToApproval.disabled = true;
+      btnToApproval.textContent = 'Approval Unavailable';
+      configureScreen5Gate(false, `Evaluation failed with HTTP ${apiError.status}: ${apiError.detail}`);
+      return;
+    }
 
-      const varianceColor = overMax ? 'var(--danger-text)' : (overCap ? 'var(--warn-text)' : 'var(--ok-text)');
+    // LIVE BACKEND RESPONSE RENDERING
+    if (apiData) {
+      const status = apiData.status;
+      state.finalStatus = status || 'AWAITING_APPROVAL';
+
+      if (status === 'CONFLICT_DETECTED') {
+        state.isOverMax = false;
+        const conflict = apiData.conflict || {};
+        const sources = Array.isArray(conflict.conflicting_sources) ? conflict.conflicting_sources.join(' vs ') : 'Multiple Policies';
+        const items = Array.isArray(conflict.items) ? conflict.items : [];
+
+        kpiStrip.innerHTML = `
+          <div class="kpi-tile"><div class="kpi-label">Decision Status</div><div class="kpi-value" style="color:var(--danger-text)">CONFLICT_DETECTED</div></div>
+          <div class="kpi-tile"><div class="kpi-label">Conflicting Sources</div><div class="kpi-value">${escapeHtml(sources)}</div></div>
+          <div class="kpi-tile"><div class="kpi-label">Execution Seam</div><div class="kpi-value">BLOCKED</div></div>
+        `;
+        verdictBox.className = 'section-box danger';
+        verdictBox.innerHTML = `<strong>Status: CONFLICT_DETECTED (${escapeHtml(conflict.topic || 'Policy Contradiction')})</strong><br/>${escapeHtml(conflict.description || 'Conflicting rules detected across retrieved documents. Automated recommendation is halted.')}`;
+
+        if (items.length > 0) {
+          factsEl.innerHTML = items.map(item =>
+            `<li><span class="cite-tag">${escapeHtml(item.document_id)}:${escapeHtml(item.chunk_id)}</span> ${escapeHtml(item.statement)}</li>`
+          ).join('');
+        } else {
+          factsEl.innerHTML = '<li>Conflicting policy documents detected; inspect source documents directly.</li>';
+        }
+
+        unknownsEl.innerHTML = '<li><strong>Human Policy Resolution Required:</strong> Conflicting channel/spend limits prevent an automated recommendation until an authorized owner resolves the contradiction.</li>';
+        explainEl.textContent = 'Two or more verified company documents state conflicting ceilings for this proposal. Per zero-hallucination governance, the workflow halted at CONFLICT_DETECTED (approval is blocked; human rejection remains available).';
+
+        btnToApproval.disabled = false;
+        btnToApproval.textContent = 'Review Conflict Gate →';
+        configureScreen5Gate(true, 'Proposal halted at CONFLICT_DETECTED: Standard approval is blocked until the policy contradiction is resolved, though an authorized reviewer may record a rejection.', { disableApprove: true });
+        return;
+      }
+
+      if (status === 'INSUFFICIENT_EVIDENCE') {
+        state.isOverMax = false;
+        const failEvent = (apiData.history || []).find(h => h.action === 'SUFFICIENCY_FAILED');
+        const failReason = (failEvent && failEvent.reason)
+          ? failEvent.reason
+          : 'Company records do not contain sufficient verified evidence or benchmarks for this proposal.';
+
+        kpiStrip.innerHTML = `
+          <div class="kpi-tile"><div class="kpi-label">Decision Status</div><div class="kpi-value" style="color:var(--danger-text)">ABSTAINED</div></div>
+          <div class="kpi-tile"><div class="kpi-label">Verified Benchmarks</div><div class="kpi-value">null (None)</div></div>
+          <div class="kpi-tile"><div class="kpi-label">Execution Seam</div><div class="kpi-value">BLOCKED</div></div>
+        `;
+        verdictBox.className = 'section-box danger';
+        verdictBox.innerHTML = `<strong>Status: INSUFFICIENT_EVIDENCE (Honest Abstention)</strong><br/>${escapeHtml(failReason)}`;
+
+        const evChunks = Array.isArray(apiData.evidence_set) ? apiData.evidence_set : [];
+        if (evChunks.length > 0) {
+          factsEl.innerHTML = evChunks.map(rc => {
+            const ch = rc.chunk || {};
+            return `<li><span class="cite-tag">${escapeHtml(ch.chunk_id || ch.document_id || 'EVIDENCE')}</span> ${escapeHtml(ch.text || '')}</li>`;
+          }).join('');
+        } else {
+          factsEl.innerHTML = '<li>No sufficient verified evidence passages matched this proposal.</li>';
+        }
+
+        unknownsEl.innerHTML = '<li>Performance metrics (CTR, CAC, conversion rate, ROAS) for this unsupported or out-of-domain request are strictly <strong>null (unknown)</strong>.</li>';
+        explainEl.textContent = 'The backend RAG engine abstained with INSUFFICIENT_EVIDENCE rather than guessing metrics or fabricating benchmarks.';
+
+        btnToApproval.disabled = false;
+        btnToApproval.textContent = 'Review Abstention Record →';
+        configureScreen5Gate(false, 'Proposal abstained with INSUFFICIENT_EVIDENCE. Neither approval nor rejection is permitted on zero-evidence proposals.');
+        return;
+      }
+
+      if (status === 'INVALID_REQUEST' || status === 'INDEX_UNAVAILABLE') {
+        state.isOverMax = false;
+        const errEvent = (apiData.history || []).find(h => h.error);
+        const errMsg = (errEvent && errEvent.error) ? errEvent.error : `Proposal halted with status ${status}.`;
+        kpiStrip.innerHTML = `
+          <div class="kpi-tile"><div class="kpi-label">Decision Status</div><div class="kpi-value" style="color:var(--danger-text)">${escapeHtml(status)}</div></div>
+          <div class="kpi-tile"><div class="kpi-label">Policy Check</div><div class="kpi-value">HALTED</div></div>
+          <div class="kpi-tile"><div class="kpi-label">Execution Seam</div><div class="kpi-value">BLOCKED</div></div>
+        `;
+        verdictBox.className = 'section-box danger';
+        verdictBox.innerHTML = `<strong>Status: ${escapeHtml(status)}</strong><br/>${escapeHtml(errMsg)}`;
+        factsEl.innerHTML = '<li>Evaluation halted before recommendation synthesis.</li>';
+        unknownsEl.innerHTML = '<li>Correct the request or index availability and re-evaluate.</li>';
+        explainEl.textContent = errMsg;
+        btnToApproval.disabled = true;
+        btnToApproval.textContent = 'Approval Unavailable';
+        configureScreen5Gate(false, `Proposal is in state ${status} and cannot proceed to human sign-off.`);
+        return;
+      }
+
+      // AWAITING_APPROVAL / RECOMMENDATION_READY with RecommendationReport
+      const rec = apiData.recommendation || {};
+      const action = rec.recommended_action || 'REVIEW';
+      state.isOverMax = action === 'REJECT' || budget > 50000;
+
+      const actionColor = action === 'REJECT'
+        ? 'var(--danger-text)'
+        : (action === 'APPROVE' ? 'var(--ok-text)' : 'var(--warn-text)');
+
       kpiStrip.innerHTML = `
         <div class="kpi-tile"><div class="kpi-label">Planned Budget</div><div class="kpi-value">$${budget.toLocaleString()}</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Channel Policy Cap</div><div class="kpi-value" style="color:${varianceColor}">$${cap.toLocaleString()}</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Gate Status</div><div class="kpi-value" style="color:var(--warn-text)">AWAITING_APPROVAL</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Recommended Action</div><div class="kpi-value" style="color:${actionColor}">${escapeHtml(action)}</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Gate Status</div><div class="kpi-value" style="color:var(--warn-text)">${escapeHtml(status)}</div></div>
       `;
 
       if (state.aiPaused) {
         verdictBox.className = 'section-box warn';
-        verdictBox.innerHTML = '<strong>AI Suggestions Paused:</strong> Automated recommendations are suppressed.';
-        explainEl.textContent = 'AI evaluation paused by user.';
-      } else if (overMax) {
-        verdictBox.className = 'section-box danger';
-        verdictBox.innerHTML = `<strong>Recommendation: REJECT / ESCALATE (Exceeds $50,000 Maximum)</strong><br/>Budget of $${budget.toLocaleString()} exceeds the maximum company cap in <code>DOC-MKT-002</code>.`;
-        explainEl.textContent = `Budget violates DOC-MKT-002 absolute cap.`;
-      } else if (overCap) {
-        const diff = budget - cap;
-        verdictBox.className = 'section-box warn';
-        verdictBox.innerHTML = `<strong>Recommendation: APPROVE_WITH_CONDITIONS (Channel Cap Variance)</strong><br/>Requested spend ($${budget.toLocaleString()}) for ${channel} exceeds the $${cap.toLocaleString()} channel cap by <strong>$${diff.toLocaleString()}</strong>. Requires managerial condition note.`;
-        explainEl.textContent = `Evaluated against DOC-MKT-001, DOC-MKT-002, and DOC-MKT-003. Variance of $${diff.toLocaleString()} detected.`;
+        verdictBox.innerHTML = '<strong>AI Suggestions Paused by User:</strong> Automated recommendations, inferences, and risk scoring are suppressed. Verified company policy facts from the backend are listed below.';
+        explainEl.textContent = 'AI suggestions are currently paused. Resume AI Help to view the backend recommendation rationale.';
       } else {
-        verdictBox.className = 'section-box ok';
-        verdictBox.innerHTML = `<strong>Recommendation: APPROVE (Within Policy Caps)</strong><br/>Requested budget of $${budget.toLocaleString()} is within policy caps. Requires human managerial sign-off.`;
-        explainEl.textContent = `All parameters within approved guidelines.`;
-      }
+        verdictBox.className = action === 'REJECT'
+          ? 'section-box danger'
+          : (action === 'APPROVE' ? 'section-box ok' : 'section-box warn');
 
-      // Populate facts from API or local fallback
-      if (apiData && apiData.recommendation && apiData.recommendation.facts && apiData.recommendation.facts.length > 0) {
-        factsEl.innerHTML = apiData.recommendation.facts.map(f => `<li><span class="cite-tag">${f.citation}</span> ${escapeHtml(f.statement)}</li>`).join('');
-      } else {
-        factsEl.innerHTML = `
-          <li><span class="cite-tag">DOC-MKT-001-C004</span> Approved acquisition channels: Paid Search (Google), Paid Social (LinkedIn Ads), and Content Marketing.</li>
-          <li><span class="cite-tag">DOC-MKT-002-C005</span> Policy caps: Search $20,000; Social $15,000; Content $7,500; Maximum $50,000 per initiative.</li>
-          <li><span class="cite-tag">DOC-MKT-003-C004</span> Historical enterprise baselines: 2.4% CTR, $32.00 average CAC ($35.00 ceiling), 2.8x target ROAS.</li>
+        const inferences = Array.isArray(rec.inferences) ? rec.inferences : [];
+        const inferencesHtml = inferences.length > 0
+          ? `<ul style="margin: 8px 0 0; padding-left: 20px;">${inferences.map(inf => `<li>${escapeHtml(inf)}</li>`).join('')}</ul>`
+          : '';
+
+        verdictBox.innerHTML = `
+          <strong>Recommendation: ${escapeHtml(action)}</strong><br/>
+          ${escapeHtml(rec.risk_assessment || 'Review verified facts and conditions before signing off.')}
+          ${inferencesHtml}
         `;
+
+        const assumptions = Array.isArray(rec.assumptions) ? rec.assumptions : [];
+        const assumptionsHtml = assumptions.length > 0
+          ? `<ul style="margin: 8px 0 0; padding-left: 20px;">${assumptions.map(a => `<li>${escapeHtml(a)}</li>`).join('')}</ul>`
+          : '';
+        explainEl.innerHTML = `<p style="margin:0;">${escapeHtml(rec.summary || '')}</p>${assumptionsHtml}`;
       }
 
-      unknownsEl.innerHTML = `
-        <li>Real-time auction bid fluctuations are unmonitored in offline mode.</li>
-        <li>ARTHA live corporate ledger balance is read-only and unmutated.</li>
-      `;
+      // R1: Read recommendation.verified_facts with object citation handling (no silent fallback)
+      const verifiedFacts = Array.isArray(rec.verified_facts) ? rec.verified_facts : [];
+      if (verifiedFacts.length > 0) {
+        factsEl.innerHTML = verifiedFacts.map(f => {
+          const citeLabel = formatCitationTag(f);
+          return `<li><span class="cite-tag">${escapeHtml(citeLabel)}</span> ${escapeHtml(f.statement)}</li>`;
+        }).join('');
+      } else {
+        factsEl.innerHTML = '<li>No verified facts were returned in the backend recommendation report.</li>';
+      }
+
+      // R2: Render backend unknowns
+      const unknowns = Array.isArray(rec.unknowns) ? rec.unknowns : [];
+      if (unknowns.length > 0) {
+        unknownsEl.innerHTML = unknowns.map(u => `<li>${escapeHtml(u)}</li>`).join('');
+      } else {
+        unknownsEl.innerHTML = '<li>No additional unknowns reported by the evaluation engine.</li>';
+      }
+
+      btnToApproval.disabled = false;
       btnToApproval.textContent = 'Go to Human Approval →';
+      configureScreen5Gate(true, '');
+      return;
     }
 
+    // OFFLINE SIMULATION FALLBACK (only when backend is unreachable)
+    if (channel.toLowerCase().includes('linear tv')) {
+      state.finalStatus = 'INSUFFICIENT_EVIDENCE';
+      state.isOverMax = false;
+      kpiStrip.innerHTML = `
+        <div class="kpi-tile"><div class="kpi-label">Decision Status</div><div class="kpi-value" style="color:var(--danger-text)">ABSTAINED (SIM)</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Verified Benchmarks</div><div class="kpi-value">null (None)</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Execution Seam</div><div class="kpi-value">BLOCKED</div></div>
+      `;
+      verdictBox.className = 'section-box danger';
+      verdictBox.innerHTML = '<strong>Status: INSUFFICIENT_EVIDENCE (Offline Simulation)</strong><br/>Company records contain zero performance benchmarks for Linear TV. The system refuses to hallucinate metrics (<code>DEFECT-SEMANTIC-001</code>).';
+      factsEl.innerHTML = '<li><span class="cite-tag">DOC-MKT-003-C006</span> No corporate performance data, conversion benchmarks, or audience research exists for linear television broadcasting.</li>';
+      unknownsEl.innerHTML = '<li>Expected Linear TV CTR, CAC, conversion rate, and ROAS are strictly <strong>null (unknown)</strong>.</li>';
+      explainEl.textContent = 'System abstains with INSUFFICIENT_EVIDENCE because no benchmark data exists.';
+      btnToApproval.disabled = false;
+      btnToApproval.textContent = 'Review Abstention Record →';
+      configureScreen5Gate(false, 'Proposal abstained with INSUFFICIENT_EVIDENCE. Approval and rejection are disabled.');
+      return;
+    }
+
+    if (channel.toLowerCase().includes('influencer')) {
+      state.finalStatus = 'CONFLICT_DETECTED';
+      state.isOverMax = false;
+      kpiStrip.innerHTML = `
+        <div class="kpi-tile"><div class="kpi-label">Decision Status</div><div class="kpi-value" style="color:var(--danger-text)">CONFLICT_DETECTED</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Conflicting Sources</div><div class="kpi-value">DOC-MKT-002 vs DOC-MKT-004</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Execution Seam</div><div class="kpi-value">BLOCKED</div></div>
+      `;
+      verdictBox.className = 'section-box danger';
+      verdictBox.innerHTML = '<strong>Status: CONFLICT_DETECTED (Offline Simulation)</strong><br/>DOC-MKT-002 states an Influencer/KOL spend ceiling of $25,000, whereas DOC-MKT-004 strictly caps it at $10,000.';
+      factsEl.innerHTML = `
+        <li><span class="cite-tag">DOC-MKT-002-C005</span> Influencer and KOL Partnerships: Allocated spend ceiling is set to $25,000.</li>
+        <li><span class="cite-tag">DOC-MKT-004-C004</span> Influencer and KOL Partnerships: Maximum allowable spend is strictly capped at $10,000 per campaign.</li>
+      `;
+      unknownsEl.innerHTML = '<li>Human Policy Owner decision required to reconcile DOC-MKT-002 vs DOC-MKT-004 ceiling.</li>';
+      explainEl.textContent = 'Offline simulation detected the documented Influencer spend contradiction.';
+      btnToApproval.disabled = false;
+      btnToApproval.textContent = 'Review Conflict Gate →';
+      configureScreen5Gate(true, 'Proposal halted at CONFLICT_DETECTED: Approval is blocked until conflict resolution; rejection remains available.', { disableApprove: true });
+      return;
+    }
+
+    const caps = {
+      'Paid Social (LinkedIn Ads)': 15000,
+      'Paid Search (Google Ads)': 20000,
+      'Content Marketing': 7500
+    };
+    const cap = caps[channel] || 15000;
+    const overCap = budget > cap;
+    const overMax = budget > 50000;
+    state.isOverMax = overMax;
+    state.finalStatus = 'AWAITING_APPROVAL';
+
+    const varianceColor = overMax ? 'var(--danger-text)' : (overCap ? 'var(--warn-text)' : 'var(--ok-text)');
+    kpiStrip.innerHTML = `
+      <div class="kpi-tile"><div class="kpi-label">Planned Budget</div><div class="kpi-value">$${budget.toLocaleString()}</div></div>
+      <div class="kpi-tile"><div class="kpi-label">Channel Policy Cap</div><div class="kpi-value" style="color:${varianceColor}">$${cap.toLocaleString()}</div></div>
+      <div class="kpi-tile"><div class="kpi-label">Gate Status</div><div class="kpi-value" style="color:var(--warn-text)">AWAITING_APPROVAL</div></div>
+    `;
+
+    if (state.aiPaused) {
+      verdictBox.className = 'section-box warn';
+      verdictBox.innerHTML = '<strong>AI Suggestions Paused:</strong> Automated recommendations are suppressed.';
+      explainEl.textContent = 'AI evaluation paused by user.';
+    } else if (overMax) {
+      verdictBox.className = 'section-box danger';
+      verdictBox.innerHTML = `<strong>Recommendation: REJECT (Exceeds $50,000 Maximum — Offline Sim)</strong><br/>Budget of $${budget.toLocaleString()} exceeds the maximum company cap in <code>DOC-MKT-002</code>.`;
+      explainEl.textContent = 'Budget violates DOC-MKT-002 absolute cap.';
+    } else if (overCap) {
+      const diff = budget - cap;
+      verdictBox.className = 'section-box warn';
+      verdictBox.innerHTML = `<strong>Recommendation: APPROVE_WITH_CONDITIONS (Channel Cap Variance — Offline Sim)</strong><br/>Requested spend ($${budget.toLocaleString()}) for ${escapeHtml(channel)} exceeds the $${cap.toLocaleString()} channel cap by <strong>$${diff.toLocaleString()}</strong>. Requires managerial condition note.`;
+      explainEl.textContent = `Evaluated offline against DOC-MKT-001, DOC-MKT-002, and DOC-MKT-003. Variance of $${diff.toLocaleString()} detected.`;
+    } else {
+      verdictBox.className = 'section-box ok';
+      verdictBox.innerHTML = `<strong>Recommendation: APPROVE (Within Policy Caps — Offline Sim)</strong><br/>Requested budget of $${budget.toLocaleString()} is within policy caps. Requires human managerial sign-off.`;
+      explainEl.textContent = 'All parameters within approved guidelines.';
+    }
+
+    factsEl.innerHTML = `
+      <li><span class="cite-tag">DOC-MKT-001-C004</span> Approved acquisition channels: Paid Search (Google), Paid Social (LinkedIn Ads), Content Marketing, and Email Nurture.</li>
+      <li><span class="cite-tag">DOC-MKT-002-C005</span> Policy caps: Search $20,000; Social $15,000; Content $7,500; Maximum $50,000 per initiative.</li>
+      <li><span class="cite-tag">DOC-MKT-003-C004</span> Historical enterprise baselines: 2.4% CTR, $32.00 average CAC ($35.00 ceiling), 2.8x target ROAS.</li>
+    `;
+    unknownsEl.innerHTML = `
+      <li>Real-time auction bid fluctuations are unmonitored in offline simulation mode.</li>
+      <li>ARTHA live corporate ledger balance is read-only and unmutated.</li>
+    `;
+    btnToApproval.disabled = false;
+    btnToApproval.textContent = 'Go to Human Approval →';
+    configureScreen5Gate(true, '');
+  }
+
+  function configureScreen5Gate(formEnabled, blockedMessage, opts) {
+    const options = opts || {};
     document.getElementById('s5-status-label').textContent = state.finalStatus;
-    document.getElementById('s5-approval-form').style.display = state.finalStatus === 'INSUFFICIENT_EVIDENCE' ? 'none' : 'block';
+    document.getElementById('s5-approval-form').style.display = formEnabled ? 'block' : 'none';
+    const btnApprove = document.getElementById('btnApprove');
+    const btnReject = document.getElementById('btnReject');
+    if (btnApprove) btnApprove.disabled = Boolean(options.disableApprove);
+    if (btnReject) btnReject.disabled = Boolean(options.disableReject);
+    const blockedNotice = document.getElementById('s5-blocked-notice');
+    if (blockedMessage) {
+      blockedNotice.textContent = blockedMessage;
+      blockedNotice.style.display = 'block';
+    } else {
+      blockedNotice.style.display = 'none';
+    }
     document.getElementById('s5-final-box').style.display = 'none';
     document.getElementById('s5-error-banner').classList.remove('show');
     state.finalized = false;
@@ -845,6 +1242,7 @@
     const errBanner = document.getElementById('s5-error-banner');
     const errText = document.getElementById('s5-error-text');
     errBanner.classList.remove('show');
+    clearAuthError();
 
     if (state.finalized) {
       errText.textContent = `Duplicate decision rejected: Proposal is already finalized with status '${state.finalStatus}'.`;
@@ -858,17 +1256,16 @@
       return;
     }
 
-    const reviewer = document.getElementById('inpReviewer').value.trim();
-    const notes = document.getElementById('inpNotes').value.trim();
-    const norm = reviewer.toLowerCase().replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
-    const disallowed = ['prof_evaluator', 'anonymous', 'anonymous_reviewer', 'default', '.', 'none', 'unknown', 'evaluator'];
-
-    if (!reviewer || norm.length < 3 || disallowed.includes(norm)) {
-      errText.textContent = 'Reviewer identity rejected. Provide an explicit, named human reviewer (e.g. "Pratik Bhuwad - CMO Product Owner"). Placeholders are prohibited.';
+    const reviewerRaw = document.getElementById('inpReviewer').value;
+    const revCheck = isValidReviewerIdentity(reviewerRaw);
+    if (!revCheck.valid) {
+      errText.textContent = revCheck.reason;
       errBanner.classList.add('show');
       return;
     }
+    const reviewer = revCheck.clean;
 
+    const notes = document.getElementById('inpNotes').value.trim();
     if (!notes || notes.length < 5) {
       errText.textContent = 'Decision notes cannot be blank (minimum 5 characters).';
       errBanner.classList.add('show');
@@ -881,40 +1278,40 @@
     btnReject.disabled = true;
 
     let apiSuccess = false;
-    let apiRespData = null;
 
     if (state.isLiveApi && state.currentProposalId) {
       try {
         const route = decision === 'APPROVED' ? 'approve' : 'reject';
-        const resp = await fetch(`/api/v1/proposals/${state.currentProposalId}/${route}`, {
+        const resp = await fetch(`/api/v1/proposals/${encodeURIComponent(state.currentProposalId)}/${route}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer mock-rs256-test-token'
-          },
+          headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ reviewer_identity: reviewer, decision_notes: notes })
         });
 
-        if (resp.status === 409) {
-          const d = await resp.json();
-          errText.textContent = d.detail || 'Proposal already finalized (409 Conflict).';
+        if (!resp.ok) {
+          let detail = `Backend gate rejected decision (HTTP ${resp.status}).`;
+          try {
+            const d = await resp.json();
+            if (d && d.detail) detail = d.detail;
+          } catch (_) {}
+          if (resp.status === 401 || resp.status === 403) {
+            showAuthError(detail);
+          }
+          errText.textContent = detail;
           errBanner.classList.add('show');
           btnApprove.disabled = false;
           btnReject.disabled = false;
           return;
-        } else if (resp.status === 400) {
-          const d = await resp.json();
-          errText.textContent = d.detail || 'Decision rejected by backend gate.';
-          errBanner.classList.add('show');
-          btnApprove.disabled = false;
-          btnReject.disabled = false;
-          return;
-        } else if (resp.ok) {
-          apiRespData = await resp.json();
-          apiSuccess = true;
         }
+
+        const apiRespData = await resp.json();
+        if (apiRespData && apiRespData.trace_id) {
+          state.traceId = apiRespData.trace_id;
+        }
+        apiSuccess = true;
       } catch (err) {
-        console.warn("Backend decision sync offline; falling back to local audit recording:", err);
+        state.isLiveApi = false;
+        state.backendStatus = 'OFFLINE_MOCK';
       }
     }
 
@@ -933,22 +1330,29 @@
     const modeLabel = apiSuccess ? 'LIVE BACKEND RECORDED' : 'LOCAL SIMULATED PROTOTYPE';
 
     finalBox.innerHTML = `
-      <strong>Decision Recorded (${decision} &bull; ${modeLabel}):</strong><br/>
+      <strong>Decision Recorded (${escapeHtml(decision)} &bull; ${escapeHtml(modeLabel)}):</strong><br/>
       <strong>Reviewer:</strong> ${safeReviewer}<br/>
       <strong>Notes:</strong> ${safeNotes}<br/>
-      <strong>Proposal ID:</strong> ${state.currentProposalId}<br/>
-      <strong>Trace ID:</strong> ${state.traceId}<br/>
-      <strong>Timestamp:</strong> ${new Date().toISOString()}<br/>
+      <strong>Proposal ID:</strong> ${escapeHtml(state.currentProposalId)}<br/>
+      <strong>Trace ID:</strong> ${escapeHtml(state.traceId)}<br/>
+      <strong>Timestamp:</strong> ${escapeHtml(new Date().toISOString())}<br/>
       <strong>Governance Guarantee:</strong> Zero ads published, zero purchase orders created. Workflow Executor remains strictly gated.
     `;
   }
 
-  // Ask Marketing Policy AI functionality
   function openQAModal() {
+    state.lastFocusedElement = document.activeElement;
     document.getElementById('qaModal').classList.add('open');
+    setTimeout(() => {
+      const inp = document.getElementById('inpQAQuery');
+      if (inp) inp.focus();
+    }, 30);
   }
+
   function closeQAModal() {
     document.getElementById('qaModal').classList.remove('open');
+    const target = document.getElementById('btnAskQA');
+    if (target) target.focus();
   }
 
   async function submitPolicyQuestion() {
@@ -956,45 +1360,81 @@
     const query = qInput.value.trim();
     if (!query) return;
 
-    const btn = document.getElementById('btnSubmitQA');
-    btn.disabled = true;
-    btn.textContent = 'Querying Knowledge Base...';
-
     const resBox = document.getElementById('qaResultBox');
     const ansEl = document.getElementById('qaAnswerText');
     const confEl = document.getElementById('qaConfidenceText');
     const citesEl = document.getElementById('qaCitationsList');
 
+    // R3: Enforce corpusAllowed and aiPaused before any /api/v1/query request
+    if (!state.corpusAllowed) {
+      ansEl.className = 'section-box danger';
+      ansEl.innerHTML = '<strong>Permission Revoked:</strong> Read-only access to internal policy documents is turned off in <em>Controls &amp; Privacy</em>. Restore permission to query the Policy Engine.';
+      confEl.textContent = 'Query blocked by user privacy control (corpusAllowed = false).';
+      citesEl.innerHTML = '<li>No documents accessed.</li>';
+      resBox.style.display = 'block';
+      return;
+    }
+
+    if (state.aiPaused) {
+      ansEl.className = 'section-box warn';
+      ansEl.innerHTML = '<strong>AI Suggestions Paused:</strong> Policy AI queries are blocked while AI Suggestions are paused. Resume AI Help in <em>Controls &amp; Privacy</em> or the top banner to continue.';
+      confEl.textContent = 'Query blocked by user control (aiPaused = true).';
+      citesEl.innerHTML = '<li>No automated query executed.</li>';
+      resBox.style.display = 'block';
+      return;
+    }
+
+    const btn = document.getElementById('btnSubmitQA');
+    btn.disabled = true;
+    btn.textContent = 'Querying Knowledge Base...';
+    clearAuthError();
+
     try {
       const resp = await fetch('/api/v1/query', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-rs256-test-token'
-        },
+        headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ query: query, top_k: 4 })
       });
 
       if (resp.ok) {
         const data = await resp.json();
+        ansEl.className = 'section-box ok';
         ansEl.innerHTML = `<strong>Answer:</strong> ${escapeHtml(data.answer)}`;
         confEl.textContent = `Confidence: ${(data.confidence * 100).toFixed(1)}% | Trace: ${data.trace_id}`;
         citesEl.innerHTML = (data.citations || []).map(c => `
-          <li><span class="cite-tag">${c.document_id}:${c.chunk_id}</span> Document: ${c.document_id}</li>
+          <li><span class="cite-tag">${escapeHtml(c.document_id)}:${escapeHtml(c.chunk_id)}</span> Document: ${escapeHtml(c.document_id)}</li>
         `).join('') || '<li>No explicit citations needed.</li>';
         resBox.style.display = 'block';
         btn.disabled = false;
         btn.textContent = 'Ask Policy Engine →';
         return;
       }
+
+      let detail = `Backend returned HTTP ${resp.status}.`;
+      try {
+        const errBody = await resp.json();
+        if (errBody && errBody.detail) detail = errBody.detail;
+      } catch (_) {}
+
+      if (resp.status === 401 || resp.status === 403) {
+        showAuthError(detail);
+      }
+      ansEl.className = 'section-box danger';
+      ansEl.innerHTML = `<strong>Backend Query Rejected (HTTP ${escapeHtml(resp.status)}):</strong> ${escapeHtml(detail)}`;
+      confEl.textContent = 'Failed closed without offline fallback.';
+      citesEl.innerHTML = '<li>No citations returned.</li>';
+      resBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Ask Policy Engine →';
+      return;
     } catch (e) {
-      console.warn("Live query failed:", e);
+      // Backend unreachable -> offline fallback
     }
 
-    // Fallback if offline
-    ansEl.innerHTML = `<strong>Answer (Offline Fallback):</strong> In accordance with DOC-MKT-002, the maximum allowable budget allocation for any individual marketing campaign or initiative is $50,000.00. [DOC-022:DOC-022-C004]`;
-    confEl.textContent = 'Confidence: 85.0% (Simulated) | Trace: TRC-OFFLINE-MOCK';
-    citesEl.innerHTML = '<li><span class="cite-tag">DOC-022:DOC-022-C004</span> Marketing spend policy guidelines.</li>';
+    ansEl.className = 'section-box ok';
+    ansEl.innerHTML = '<strong>Answer (Offline Fallback):</strong> In accordance with DOC-MKT-002, the maximum allowable budget allocation for any individual marketing campaign or initiative is $50,000.00. [DOC-MKT-002:DOC-MKT-002-C001]';
+    confEl.textContent = 'Confidence: 85.0% (Offline Simulation) | Trace: TRC-OFFLINE-MOCK';
+    citesEl.innerHTML = '<li><span class="cite-tag">DOC-MKT-002:DOC-MKT-002-C001</span> Marketing spend policy guidelines.</li>';
     resBox.style.display = 'block';
     btn.disabled = false;
     btn.textContent = 'Ask Policy Engine →';
@@ -1011,17 +1451,31 @@
     state.finalStatus = 'AWAITING_APPROVAL';
     state.currentProposalId = 'REQ-' + Date.now().toString(36).toUpperCase();
     state.traceId = 'TRC-' + Date.now().toString(36).toUpperCase();
-    document.getElementById('inpReviewer').value = 'Pratik Bhuwad - CMO Product Owner';
-    document.getElementById('inpNotes').value = 'Approved under condition that spend is capped at $15,000 for initial flight.';
+    document.getElementById('inpReviewer').value = '';
+    document.getElementById('inpNotes').value = '';
     document.getElementById('s5-error-banner').classList.remove('show');
     document.getElementById('s5-final-box').style.display = 'none';
+    document.getElementById('s5-blocked-notice').style.display = 'none';
+    document.getElementById('s5-approval-form').style.display = 'block';
+    document.getElementById('btnApprove').disabled = false;
+    document.getElementById('btnReject').disabled = false;
+    document.getElementById('btnToApproval').disabled = false;
+    clearAuthError();
     selectGoal('linkedin');
     goTo(1);
   }
 
-  function dismissHelp(id) { document.getElementById(id).classList.add('hidden'); }
-  function toggleLargeText() { document.body.classList.toggle('large-text'); }
-  function toggleContrast() { document.body.classList.toggle('light-contrast'); }
+  function dismissHelp(id) {
+    document.getElementById(id).classList.add('hidden');
+  }
+
+  function toggleLargeText() {
+    document.body.classList.toggle('large-text');
+  }
+
+  function toggleContrast() {
+    document.body.classList.toggle('light-contrast');
+  }
 
   function readCurrentScreen() {
     if (!('speechSynthesis' in window)) {
@@ -1042,11 +1496,12 @@
     }
   });
 
-  function openControls() {
+  function refreshTraceInspector() {
     document.getElementById('traceInspector').textContent = JSON.stringify({
       theme: document.body.classList.contains('light-contrast') ? 'grafana-light-high-contrast' : 'grafana-dark',
       backend_status: state.backendStatus,
       is_live_api: state.isLiveApi,
+      auth_token_configured: Boolean((state.authToken || '').trim()),
       current_proposal_id: state.currentProposalId,
       trace_id: state.traceId,
       current_screen: state.step,
@@ -1057,24 +1512,63 @@
       real_world_execution_enabled: false,
       covert_tracking_enabled: false
     }, null, 2);
-    document.getElementById('controlsModal').classList.add('open');
+  }
+
+  function openControls(focusTarget) {
+    state.lastFocusedElement = document.activeElement;
+    refreshTraceInspector();
+    const modal = document.getElementById('controlsModal');
+    modal.classList.add('open');
+    setTimeout(() => {
+      const targetId = focusTarget === 'token' ? 'inpAuthToken' : 'ctrlPauseBtn';
+      const el = document.getElementById(targetId);
+      if (el) el.focus();
+    }, 30);
   }
 
   function closeControls() {
     document.getElementById('controlsModal').classList.remove('open');
+    const target = document.getElementById('btnUserControls');
+    if (target) target.focus();
+  }
+
+  function applyAuthToken() {
+    const inp = document.getElementById('inpAuthToken');
+    state.authToken = (inp.value || '').trim();
+    document.getElementById('authTokenStatus').textContent = state.authToken
+      ? 'Auth Header: Bearer token configured in session memory'
+      : 'Auth Header: Omitted (no token set)';
+    if (state.authToken) clearAuthError();
+    refreshTraceInspector();
+  }
+
+  function clearAuthToken() {
+    state.authToken = '';
+    document.getElementById('inpAuthToken').value = '';
+    document.getElementById('authTokenStatus').textContent = 'Auth Header: Omitted (no token set)';
+    refreshTraceInspector();
   }
 
   function togglePauseAI() {
     state.aiPaused = !state.aiPaused;
     document.getElementById('pausedBanner').classList.toggle('show', state.aiPaused);
     document.getElementById('ctrlPauseBtn').textContent = state.aiPaused ? 'Resume' : 'Pause';
-    openControls();
+    refreshTraceInspector();
+  }
+
+  function toggleMuteTips() {
+    state.tipsMuted = !state.tipsMuted;
+    document.querySelectorAll('.help-box').forEach(el => {
+      el.classList.toggle('hidden', state.tipsMuted);
+    });
+    document.getElementById('ctrlMuteBtn').textContent = state.tipsMuted ? 'Unmute Tips' : 'Mute Tips';
+    refreshTraceInspector();
   }
 
   function togglePermission() {
     state.corpusAllowed = !state.corpusAllowed;
     document.getElementById('ctrlPermBtn').textContent = state.corpusAllowed ? 'Revoke' : 'Restore';
-    openControls();
+    refreshTraceInspector();
   }
 
   function clearDraftData() {

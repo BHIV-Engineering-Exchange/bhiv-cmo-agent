@@ -199,7 +199,8 @@ class DecisionWorkflow:
         # that no corporate performance data, conversion benchmarks, or audience research exists
         # for Linear TV / linear television broadcasting. Any proposal allocating capital to or
         # projecting returns on Linear TV must abstain with INSUFFICIENT_EVIDENCE.
-        proposal_content = f"{request.title} {request.proposal_text}"
+        channel_meta = str((request.metadata or {}).get("channel", ""))
+        proposal_content = f"{request.title} {request.proposal_text} {channel_meta}"
         if re.search(r"\blinear[-\s]*(?:tv|television)\b", proposal_content, re.IGNORECASE):
             logger.info(
                 f"DEFECT-SEMANTIC-001: Rejecting proposal {request.request_id} due to zero Linear TV empirical evidence."
@@ -217,7 +218,8 @@ class DecisionWorkflow:
             history.append({
                 "action": "SUFFICIENCY_FAILED",
                 "reason": fail_reason,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "trace_id": trace_id
             })
             record = WorkflowRecord(
                 request_id=request.request_id,
@@ -358,30 +360,36 @@ class DecisionWorkflow:
                 inferences.append(
                     f"Requested budget of ${req_budget:,.2f} is within the policy maximum cap of ${budget_limit:,.2f} [{budget_ref}]."
                 )
-                proposal_full = f"{request.title} {request.proposal_text}".lower()
+                channel_meta = str((request.metadata or {}).get("channel", ""))
+                proposal_full = f"{request.title} {request.proposal_text} {channel_meta}".lower()
 
                 # Channel Budget Cap Evaluation (DOC-MKT-002 Section 2)
+                channel_caps = [
+                    (("linkedin", "paid social"), "Paid Social (LinkedIn Ads)", 15000.0),
+                    (("google ads", "google search", "paid search"), "Paid Search (Google Ads)", 20000.0),
+                    (("content marketing", "content production", "whitepaper"), "Content Marketing / Production", 7500.0),
+                ]
                 channel_cap_exceeded = False
                 channel_cap_desc = ""
 
-                if "linkedin" in proposal_full or "paid social" in proposal_full:
-                    linkedin_cap = 15000.0
-                    if req_budget > linkedin_cap:
-                        channel_cap_exceeded = True
-                        channel_cap_desc = (
-                            f"Requested budget of ${req_budget:,.2f} for Paid Social (LinkedIn Ads) "
-                            f"exceeds the $15,000.00 channel cap specified in DOC-MKT-002 (Section 2) "
-                            f"by ${(req_budget - linkedin_cap):,.2f}."
-                        )
+                for keywords, label, cap_amount in channel_caps:
+                    if any(kw in proposal_full for kw in keywords):
+                        if req_budget > cap_amount:
+                            channel_cap_exceeded = True
+                            channel_cap_desc = (
+                                f"Requested budget of ${req_budget:,.2f} for {label} "
+                                f"exceeds the ${cap_amount:,.2f} channel cap specified in DOC-MKT-002 (Section 2) "
+                                f"by ${(req_budget - cap_amount):,.2f}."
+                            )
+                        break
 
                 if channel_cap_exceeded:
                     inferences.append(f"Channel Cap Variance: {channel_cap_desc}")
                     recommended_action = "APPROVE_WITH_CONDITIONS"
                     risk_assessment = (
                         f"Policy Variance / Channel Over-Allocation: {channel_cap_desc} "
-                        f"Recommended approval requires conditions: reallocating the ${(req_budget - 15000.0):,.2f} excess "
-                        f"to complementary channels (such as Paid Search or Content Syndication) or obtaining an authorized "
-                        f"Product Owner / executive exception."
+                        f"Recommended approval requires conditions: reallocating the excess "
+                        f"to complementary channels or obtaining an authorized Product Owner / executive exception."
                     )
                 else:
                     # Check 15% reserve buffer rule
