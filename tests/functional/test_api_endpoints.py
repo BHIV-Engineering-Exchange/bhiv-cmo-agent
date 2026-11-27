@@ -321,3 +321,16 @@ def test_masterdb_persistence_adapter_is_record_store():
     from evidence_rag.record_store import RecordStore
     adapter = MasterDBPersistenceAdapter(base_url="http://127.0.0.1:9999")
     assert isinstance(adapter, RecordStore)
+
+
+# -----------------------------------------------------------------------------
+# 9. UI Session Auth Negotiation Tests
+# -----------------------------------------------------------------------------
+def test_auth_session_negotiation_endpoint(api_client):
+    """Verify /api/v1/auth/session provides session token in non-strict mode without 401."""
+    resp = api_client.get("/api/v1/auth/session")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["auth_enabled"] is True
+    assert data["token"] == "cmo-session-dev-token"
+    assert data["mode"] == "development_session"
