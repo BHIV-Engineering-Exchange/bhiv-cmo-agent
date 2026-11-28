@@ -1,0 +1,60 @@
+[
+  {
+    "decision_id": "DEC-BUD-001",
+    "gate": "BUDGET_GATE",
+    "title": "Budget reallocation (\u20b960 L)",
+    "requested_by": "Performance Marketing Lead",
+    "amount": 6000000.0,
+    "status": "AWAITING_APPROVAL",
+    "requires_role": [
+      "CMO",
+      "Finance Director"
+    ],
+    "history": [],
+    "created_at": "2026-11-28T05:40:31.106655+00:00",
+    "signed_at": null
+  },
+  {
+    "decision_id": "DEC-GTM-002",
+    "gate": "STRATEGY_GATE",
+    "title": "Product launch (AI Suite) - Go/No-Go",
+    "requested_by": "GTM Director",
+    "amount": null,
+    "status": "AWAITING_APPROVAL",
+    "requires_role": [
+      "CMO"
+    ],
+    "history": [],
+    "created_at": "2026-11-28T05:40:31.106655+00:00",
+    "signed_at": null
+  },
+  {
+    "decision_id": "DEC-VND-003",
+    "gate": "VENDOR_CONTRACT_GATE",
+    "title": "Agency contract renewal (Q1-Q4 FY27)",
+    "requested_by": "Brand Operations Lead",
+    "amount": null,
+    "status": "AWAITING_APPROVAL",
+    "requires_role": [
+      "CMO",
+      "Legal Head"
+    ],
+    "history": [],
+    "created_at": "2026-11-28T05:40:31.106655+00:00",
+    "signed_at": null
+  },
+  {
+    "decision_id": "DEC-BRD-004",
+    "gate": "BRAND_LEGAL_GATE",
+    "title": "Brand communication (sensitive PR)",
+    "requested_by": "Corporate Communications",
+    "amount": null,
+    "status": "AWAITING_APPROVAL",
+    "requires_role": [
+      "CMO"
+    ],
+    "history": [],
+    "created_at": "2026-11-28T05:40:31.106655+00:00",
+    "signed_at": null
+  }
+]
