@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from evidence_rag.api.config import api_settings
-from evidence_rag.api.routes import health_router, query_router, proposals_router
+from evidence_rag.api.routes import health_router, query_router, proposals_router, auth_router
 from evidence_rag.api.dependencies import get_workflow
 from evidence_rag.logging_config import setup_logger
 
@@ -53,11 +53,13 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(query_router)
     app.include_router(proposals_router)
+    app.include_router(auth_router)
 
     # Mount routers under /api/v1 prefix as canonical API version
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(query_router, prefix="/api/v1")
     app.include_router(proposals_router, prefix="/api/v1")
+    app.include_router(auth_router, prefix="/api/v1")
 
     # Static UI directory and root dashboard route
     static_dir = Path(__file__).resolve().parent / "static"

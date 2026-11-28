@@ -307,6 +307,7 @@
 
   <div class="banner banner-danger" id="authBanner" role="alert">
     <span id="authBannerMsg"><strong>Authentication Required:</strong> Backend rejected the request (401/403). Enter a valid Bearer token in Controls &amp; Privacy.</span>
+    <button class="btn-secondary" id="btnAutoToken" onclick="autoAcquireTokenAndRetry()">Authorize Session</button>
     <button class="btn-quiet" onclick="openControls('token')">Set Bearer Token</button>
   </div>
 
@@ -580,6 +581,7 @@
         <input type="password" id="inpAuthToken" autocomplete="off" placeholder="Paste Bearer token (without 'Bearer ' prefix)" />
         <button class="btn-secondary" id="btnApplyToken" onclick="applyAuthToken()">Apply</button>
         <button class="btn-quiet" id="btnClearToken" onclick="clearAuthToken()">Clear</button>
+        <button class="btn-quiet" id="btnSessionToken" onclick="initSessionAuth(true)">Fetch Session Token</button>
       </div>
       <div class="hint" id="authTokenStatus">Auth Header: Omitted (no token set)</div>
     </div>
@@ -714,6 +716,36 @@
     return { valid: true, clean: reviewer.trim() };
   }
 
+  async function initSessionAuth(force) {
+    if (state.authToken && !force) return;
+    try {
+      const resp = await fetch('/api/v1/auth/session', { method: 'GET' });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.token) {
+          state.authToken = data.token;
+          const inp = document.getElementById('inpAuthToken');
+          if (inp) inp.value = data.token;
+          const statusEl = document.getElementById('authTokenStatus');
+          if (statusEl) statusEl.textContent = 'Auth Header: Active session token configured (' + data.mode + ')';
+          clearAuthError();
+          refreshTraceInspector();
+        }
+      }
+    } catch (_) {}
+  }
+
+  async function autoAcquireTokenAndRetry() {
+    await initSessionAuth(true);
+    clearAuthError();
+    if (state.step === 3) {
+      evaluateProposal();
+    } else if (state.step === 5) {
+      // If error happened on approval / rejection step
+      clearAuthError();
+    }
+  }
+
   async function checkBackendHealth() {
     const badge = document.getElementById('backendBadge');
     try {
@@ -725,6 +757,7 @@
         badge.className = 'badge-status connected';
         badge.textContent = `● LIVE API CONNECTED (Path B v${data.version})`;
         document.getElementById('s1-mode-meta').textContent = 'Backend: Path B REST Microservice';
+        await initSessionAuth(false);
         return;
       }
     } catch (e) {
