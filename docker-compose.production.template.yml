@@ -9,18 +9,21 @@ services:
       - .env
     volumes:
       - cmo_records:/app/data/workflow_records
+      - cmo_governance:/app/data/governance
       - cmo_logs:/app/logs
     networks:
       - cmo-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
-      interval: 20s
+      interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 15s
+      retries: 5
+      start_period: 10s
 
 volumes:
   cmo_records:
+    driver: local
+  cmo_governance:
     driver: local
   cmo_logs:
     driver: local

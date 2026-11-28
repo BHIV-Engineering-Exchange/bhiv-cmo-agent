@@ -3,6 +3,7 @@
 Connects the CMO Agent to the local MASTERDB platform (cap-cmo-marketing-intelligence)
 while maintaining complete failover resilience to the local RecordStore when disconnected.
 """
+import threading
 from typing import Optional, List, Dict, Any
 from pathlib import Path
 import httpx
@@ -13,6 +14,8 @@ from evidence_rag.logging_config import setup_logger
 from evidence_rag.api.config import api_settings
 
 logger = setup_logger("evidence_rag.api.masterdb_client")
+
+_probe_guard = threading.local()
 
 
 class MasterDBPersistenceAdapter(RecordStore):
@@ -35,7 +38,35 @@ class MasterDBPersistenceAdapter(RecordStore):
 
     def check_connection(self) -> Dict[str, Any]:
         """Probe MASTERDB health and capability registration."""
+        # 1. Guard against recursive loop
+        if getattr(_probe_guard, "active", False):
+            return {
+                "connected": False,
+                "status": "LOCAL_STORE_FALLBACK",
+                "base_url": self.base_url,
+                "reason": "Recursive probe suppressed."
+            }
+
+        # 2. Prevent self-referential loop if base_url points to our own server/port
+        base_clean = self.base_url.rstrip("/")
+        normalized = base_clean.lower()
+        if normalized in (
+            "http://127.0.0.1:8000",
+            "http://localhost:8000",
+            "http://0.0.0.0:8000",
+            f"http://127.0.0.1:{api_settings.api_port}",
+            f"http://localhost:{api_settings.api_port}",
+            f"http://0.0.0.0:{api_settings.api_port}",
+        ):
+            return {
+                "connected": False,
+                "status": "LOCAL_STORE_FALLBACK",
+                "base_url": self.base_url,
+                "reason": "MASTERDB_URL points to local API port; operating in local store fallback mode."
+            }
+
         try:
+            _probe_guard.active = True
             with httpx.Client(timeout=1.5) as client:
                 resp = client.get(f"{self.base_url}/health")
                 if resp.status_code == 200:
@@ -60,6 +91,8 @@ class MasterDBPersistenceAdapter(RecordStore):
                 "base_url": self.base_url,
                 "reason": str(e)
             }
+        finally:
+            _probe_guard.active = False
 
     def fetch_marketing_intelligence(
         self,

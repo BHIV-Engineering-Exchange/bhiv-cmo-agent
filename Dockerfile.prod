@@ -59,7 +59,7 @@ COPY src/ /app/src/
 RUN pip install --no-deps -e .
 
 # Create writable runtime directories for non-root user
-RUN mkdir -p /app/data/workflow_records /app/logs && \
+RUN mkdir -p /app/data/workflow_records /app/data/governance /app/logs && \
     chown -R cmo:cmo /app
 
 # Switch to non-root user

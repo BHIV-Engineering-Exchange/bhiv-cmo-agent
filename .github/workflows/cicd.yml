@@ -70,6 +70,7 @@ jobs:
     name: Deploy to remote production VM via SSH
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Download deployment artifacts
         uses: actions/download-artifact@v4
@@ -92,15 +93,15 @@ jobs:
 
       - name: Create CMO directory on VM
         run: |
-          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "mkdir -p ~/CMO"
+          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "mkdir -p ~/CMO"
 
       - name: Copy deployment tarball to VM
         run: |
-          sshpass -p "${{ secrets.VM_PASSWORD }}" scp -P ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no deployment.tar.gz ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }}:~/CMO/deployment.tar.gz
+          sshpass -p "${{ secrets.VM_PASSWORD }}" scp -P ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 deployment.tar.gz ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }}:~/CMO/deployment.tar.gz
 
       - name: Deploy production stack on VM
         run: |
-          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
+          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
             set -euo pipefail
             cd ~/CMO
             
@@ -144,7 +145,7 @@ jobs:
             
             # Health Check loop for service readiness
             echo "Waiting for CMO Agent API to be healthy on port 8035..."
-            for i in {1..12}; do
+            for i in {1..30}; do
               if docker compose -f docker-compose.production.yml ps --filter "status=running" --filter "health=unhealthy" -q >/dev/null 2>&1; then
                 UNHEALTHY_COUNT=$(docker compose -f docker-compose.production.yml ps --filter "status=running" --filter "health=unhealthy" -q | wc -l)
                 STARTING_COUNT=$(docker compose -f docker-compose.production.yml ps --filter "status=running" --filter "health=starting" -q | wc -l)
@@ -169,14 +170,14 @@ jobs:
                 break
               fi
               
-              if [ "$i" -eq 12 ]; then
-                echo "Health check failed after 120 seconds!"
+              if [ "$i" -eq 30 ]; then
+                echo "Health check failed after 300 seconds!"
                 docker compose -f docker-compose.production.yml ps
                 docker compose -f docker-compose.production.yml logs --tail=100
                 exit 1
               fi
               
-              echo "Status: $STARTING_COUNT starting, $UNHEALTHY_COUNT unhealthy, cmo_status=$CMO_STATUS, http_probe=$HTTP_HEALTH. Retrying in 10s..."
+              echo "Status: $STARTING_COUNT starting, $UNHEALTHY_COUNT unhealthy, cmo_status=$CMO_STATUS, http_probe=$HTTP_HEALTH. Retrying in 10s ($i/30)..."
               sleep 10
             done
             
@@ -187,7 +188,7 @@ jobs:
       - name: Update Release Documentation on Success
         if: success()
         run: |
-          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
+          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
             set -euo pipefail
             cd ~/CMO
             if [ ! -f docs/RELEASE_HISTORY.md ]; then
@@ -203,7 +204,7 @@ jobs:
       - name: Save persistent Release History
         if: always()
         run: |
-          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
+          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
             set -euo pipefail
             cd ~/CMO
             if [ -f docs/RELEASE_HISTORY.md ]; then
@@ -217,6 +218,7 @@ jobs:
     needs: [build, deploy]
     if: always() && needs.deploy.result == 'failure'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Install sshpass
         run: |
@@ -224,13 +226,13 @@ jobs:
 
       - name: Automatic Rollback on Failure
         run: |
-          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
+          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
             set -euo pipefail
             cd ~/CMO
             
             # Robust parsing of Release History to extract the last healthy SHA
-            if [ -f docs/RELEASE_HISTORY.md ] && grep -qE "SUCCESS|ROLLBACK_SUCCESS" docs/RELEASE_HISTORY.md; then
-              LAST_HEALTHY_TAG=$(grep -E "SUCCESS|ROLLBACK_SUCCESS" docs/RELEASE_HISTORY.md | tail -n 1 | awk -F '|' '{
+            if [ -f docs/RELEASE_HISTORY.md ] && grep -qE "SUCCESS|ROLLBACK_SUCCESS|BASELINE" docs/RELEASE_HISTORY.md; then
+              LAST_HEALTHY_TAG=$(grep -E "SUCCESS|ROLLBACK_SUCCESS|BASELINE" docs/RELEASE_HISTORY.md | tail -n 1 | awk -F '|' '{
                 for(i=1; i<=NF; i++) {
                   gsub(/[[:space:]]/, "", $i);
                   if ($i ~ /^[0-9a-f]{7}$/) {
@@ -241,11 +243,11 @@ jobs:
               }')
               
               if [ -z "$LAST_HEALTHY_TAG" ]; then
-                echo "⚠️ No last healthy tag extracted from Release History. Cannot perform automatic rollback."
-                exit 1
+                echo "⚠️ No commit hash extracted from Release History. Falling back to 'latest' tag."
+                LAST_HEALTHY_TAG="latest"
               fi
               
-              echo "🚨 Deployment failed! Rolling back to last healthy tag: $LAST_HEALTHY_TAG"
+              echo "🚨 Deployment failed! Rolling back to tag: $LAST_HEALTHY_TAG"
               
               sed "s|IMG_TAG|$LAST_HEALTHY_TAG|g" docker-compose.production.template.yml > docker-compose.production.yml
               
@@ -257,7 +259,7 @@ jobs:
               docker compose -f docker-compose.production.yml ps
               
               echo "Waiting for rollback services to be healthy..."
-              for i in {1..12}; do
+              for i in {1..20}; do
                 if docker compose -f docker-compose.production.yml ps --filter "status=running" --filter "health=unhealthy" -q >/dev/null 2>&1; then
                   UNHEALTHY_COUNT=$(docker compose -f docker-compose.production.yml ps --filter "status=running" --filter "health=unhealthy" -q | wc -l)
                   STARTING_COUNT=$(docker compose -f docker-compose.production.yml ps --filter "status=running" --filter "health=starting" -q | wc -l)
@@ -282,13 +284,13 @@ jobs:
                   exit 0
                 fi
                 
-                if [ "$i" -eq 12 ]; then
+                if [ "$i" -eq 20 ]; then
                   echo "Rollback health check failed!"
                   echo "| $(date -u +'%Y-%m-%d %H:%M:%S UTC') | $LAST_HEALTHY_TAG | ROLLBACK_FAILED | Rollback from failed ${{ needs.build.outputs.sha_short }} failed health check |" >> docs/RELEASE_HISTORY.md
                   exit 1
                 fi
                 
-                echo "Status: $STARTING_COUNT starting, $UNHEALTHY_COUNT unhealthy, cmo_status=$CMO_STATUS, http_health=$HTTP_HEALTH. Retrying in 10s..."
+                echo "Status: $STARTING_COUNT starting, $UNHEALTHY_COUNT unhealthy, cmo_status=$CMO_STATUS, http_health=$HTTP_HEALTH. Retrying in 10s ($i/20)..."
                 sleep 10
               done
             else
@@ -308,7 +310,7 @@ jobs:
       - name: Save persistent Release History
         if: always()
         run: |
-          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
+          sshpass -p "${{ secrets.VM_PASSWORD }}" ssh -p ${{ secrets.VM_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} "bash -s" << 'EOF'
             set -euo pipefail
             cd ~/CMO
             if [ -f docs/RELEASE_HISTORY.md ]; then
