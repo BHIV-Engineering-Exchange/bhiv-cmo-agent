@@ -1,0 +1,85 @@
+{
+  "proposal_status": "CMO_DOMAIN_RATIFIED_MDU_REGISTRATION_PENDING",
+  "contract_id": "cmo.market_intelligence.v2",
+  "dataset_id": "ds-cmo-marketing-001",
+  "endorsed_by": "Pratik Bhuwad - CMO Product Owner & Acting Workstream Lead",
+  "manifest_version": "2.0-cmo-ratified",
+  "documents": [
+    {
+      "document_id": "DOC-MKT-001",
+      "owner": null,
+      "rights": "SYNTHETIC_PREPROD_ONLY",
+      "access_classification": "INTERNAL_NON_PRODUCTION",
+      "approved_purpose": "Pre-production decision-support workflow evaluation (synthetic data only)",
+      "provenance_ref": "data/marketing_corpus/DOC-MKT-001_campaign_objectives.md",
+      "source_type": "strategy_specification",
+      "version": "1.0.0",
+      "retrieval_timestamp": null,
+      "effective_timestamp": "2026-09-15T10:00:00Z",
+      "freshness": {
+        "sla_hours": 48.0,
+        "sla_status": "RATIFIED",
+        "freshness_state": "STALE"
+      },
+      "quality_status": "VERIFIED_SYNTHETIC",
+      "content_hash": "64bc48b651a43274d514ea6d4da1056c02e78c22b64180652083241dc5d2b83d"
+    },
+    {
+      "document_id": "DOC-MKT-002",
+      "owner": null,
+      "rights": "SYNTHETIC_PREPROD_ONLY",
+      "access_classification": "INTERNAL_NON_PRODUCTION",
+      "approved_purpose": "Pre-production decision-support workflow evaluation (synthetic data only)",
+      "provenance_ref": "data/marketing_corpus/DOC-MKT-002_budget_guidelines.md",
+      "source_type": "financial_policy",
+      "version": "1.0.0",
+      "retrieval_timestamp": null,
+      "effective_timestamp": "2026-09-16T11:00:00Z",
+      "freshness": {
+        "sla_hours": 48.0,
+        "sla_status": "RATIFIED",
+        "freshness_state": "STALE"
+      },
+      "quality_status": "VERIFIED_SYNTHETIC",
+      "content_hash": "aa73f3c83031e92f37ba82bb6ed36e1bc15009689b97e2dbee9e1eefe5c02037"
+    },
+    {
+      "document_id": "DOC-MKT-003",
+      "owner": null,
+      "rights": "SYNTHETIC_PREPROD_ONLY",
+      "access_classification": "INTERNAL_NON_PRODUCTION",
+      "approved_purpose": "Pre-production decision-support workflow evaluation (synthetic data only)",
+      "provenance_ref": "data/marketing_corpus/DOC-MKT-003_past_performance_benchmarks.md",
+      "source_type": "analytics_benchmark",
+      "version": "1.0.0",
+      "retrieval_timestamp": null,
+      "effective_timestamp": "2026-09-17T14:00:00Z",
+      "freshness": {
+        "sla_hours": 48.0,
+        "sla_status": "RATIFIED",
+        "freshness_state": "STALE"
+      },
+      "quality_status": "VERIFIED_SYNTHETIC",
+      "content_hash": "0fffe465b65e743f48fbbacfcc8761fe40b4ee66f0e768bbd561bf2878b3ecee"
+    },
+    {
+      "document_id": "DOC-MKT-004",
+      "owner": null,
+      "rights": "SYNTHETIC_PREPROD_ONLY",
+      "access_classification": "INTERNAL_NON_PRODUCTION",
+      "approved_purpose": "Pre-production decision-support workflow evaluation (synthetic data only)",
+      "provenance_ref": "data/marketing_corpus/DOC-MKT-004_compliance_and_channel_rules.md",
+      "source_type": "compliance_standard",
+      "version": "1.0.0",
+      "retrieval_timestamp": null,
+      "effective_timestamp": "2026-09-18T16:00:00Z",
+      "freshness": {
+        "sla_hours": 48.0,
+        "sla_status": "RATIFIED",
+        "freshness_state": "STALE"
+      },
+      "quality_status": "VERIFIED_SYNTHETIC",
+      "content_hash": "f72bad34afae58787c4d4a5701f8f802f482a9c061982fdc046514adf75b0728"
+    }
+  ]
+}

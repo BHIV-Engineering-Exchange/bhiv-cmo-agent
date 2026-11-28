@@ -1,0 +1,255 @@
+{
+  "benchmark_type": "REPRODUCIBLE_REPLACEMENT_14Q",
+  "timestamp": "2026-11-26T09:54:24.696380+00:00",
+  "corpus_fingerprint": "df043f7b04f03920",
+  "total_queries": 14,
+  "applicable_retrieval_queries": 11,
+  "mean_recall_at_4": 1.0,
+  "mean_precision_at_4": 0.5455,
+  "mrr": 0.9394,
+  "status_accuracy": 1.0,
+  "domain_isolation": 1.0,
+  "citation_validity_rate": 1.0,
+  "historical_unverified_claim": {
+    "note": "Original 7 unpushed Hariom files unavailable in repo; preserved as historical claim only.",
+    "mean_recall_at_4": 0.9583,
+    "mean_precision_at_4": 0.3125,
+    "mrr": 0.9583,
+    "status_accuracy": 0.7857,
+    "domain_isolation": 1.0
+  },
+  "results": [
+    {
+      "id": "MKT-R01",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-001"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-001",
+        "DOC-MKT-001",
+        "DOC-MKT-001",
+        "DOC-MKT-002"
+      ],
+      "citations_count": 2,
+      "latency_ms": 5.28
+    },
+    {
+      "id": "MKT-R02",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-001"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-001",
+        "DOC-MKT-002",
+        "DOC-MKT-002",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 1,
+      "latency_ms": 3.12
+    },
+    {
+      "id": "MKT-R03",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-002"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-002",
+        "DOC-MKT-002",
+        "DOC-MKT-001",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 2,
+      "latency_ms": 3.25
+    },
+    {
+      "id": "MKT-R04",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-002"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-002",
+        "DOC-MKT-002",
+        "DOC-MKT-003",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 2,
+      "latency_ms": 3.01
+    },
+    {
+      "id": "MKT-R05",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-002"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-002",
+        "DOC-MKT-001",
+        "DOC-MKT-003",
+        "DOC-MKT-003"
+      ],
+      "citations_count": 2,
+      "latency_ms": 2.83
+    },
+    {
+      "id": "MKT-R06",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-002"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-002",
+        "DOC-MKT-001",
+        "DOC-MKT-004",
+        "DOC-MKT-003"
+      ],
+      "citations_count": 2,
+      "latency_ms": 2.97
+    },
+    {
+      "id": "MKT-R07",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-003"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-003",
+        "DOC-MKT-003"
+      ],
+      "citations_count": 1,
+      "latency_ms": 2.82
+    },
+    {
+      "id": "MKT-R08",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-003"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-003",
+        "DOC-MKT-001",
+        "DOC-MKT-003",
+        "DOC-MKT-003"
+      ],
+      "citations_count": 3,
+      "latency_ms": 2.74
+    },
+    {
+      "id": "MKT-R09",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-004"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-004",
+        "DOC-MKT-004",
+        "DOC-MKT-001",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 2,
+      "latency_ms": 3.36
+    },
+    {
+      "id": "MKT-R10",
+      "expected_status": "INSUFFICIENT_EVIDENCE",
+      "actual_status": "INSUFFICIENT_EVIDENCE",
+      "status_match": true,
+      "expected_docs": [],
+      "retrieved_docs_top4": [
+        "DOC-MKT-003",
+        "DOC-MKT-001",
+        "DOC-MKT-003",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 0,
+      "latency_ms": 2.79
+    },
+    {
+      "id": "MKT-R11",
+      "expected_status": "CONFLICT_DETECTED",
+      "actual_status": "CONFLICT_DETECTED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-002",
+        "DOC-MKT-004"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-004",
+        "DOC-MKT-002",
+        "DOC-MKT-003",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 2,
+      "latency_ms": 2.74
+    },
+    {
+      "id": "MKT-R12",
+      "expected_status": "ANSWERED",
+      "actual_status": "ANSWERED",
+      "status_match": true,
+      "expected_docs": [
+        "DOC-MKT-001",
+        "DOC-MKT-003"
+      ],
+      "retrieved_docs_top4": [
+        "DOC-MKT-002",
+        "DOC-MKT-002",
+        "DOC-MKT-003",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 2,
+      "latency_ms": 2.63
+    },
+    {
+      "id": "MKT-R13",
+      "expected_status": "INSUFFICIENT_EVIDENCE",
+      "actual_status": "INSUFFICIENT_EVIDENCE",
+      "status_match": true,
+      "expected_docs": [],
+      "retrieved_docs_top4": [
+        "DOC-MKT-001",
+        "DOC-MKT-001",
+        "DOC-MKT-002",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 0,
+      "latency_ms": 2.65
+    },
+    {
+      "id": "MKT-R14",
+      "expected_status": "INSUFFICIENT_EVIDENCE",
+      "actual_status": "INSUFFICIENT_EVIDENCE",
+      "status_match": true,
+      "expected_docs": [],
+      "retrieved_docs_top4": [
+        "DOC-MKT-004",
+        "DOC-MKT-002",
+        "DOC-MKT-002",
+        "DOC-MKT-001"
+      ],
+      "citations_count": 0,
+      "latency_ms": 2.51
+    }
+  ]
+}

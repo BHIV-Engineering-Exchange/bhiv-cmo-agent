@@ -13,6 +13,32 @@ class Chunker:
         self.config = config or ChunkingConfig()
         self.cleaner = cleaner or TextCleaner()
 
+    @staticmethod
+    def _is_heading_only(text: str) -> bool:
+        """Return True if text is a single-line Markdown heading with no body content."""
+        stripped = text.strip()
+        return stripped.startswith("#") and "\n" not in stripped
+
+    @staticmethod
+    def _compute_boundary_overlap(text: str, overlap_size: int) -> str:
+        """Compute a word-boundary-aligned overlap suffix without mid-word truncation."""
+        if overlap_size <= 0 or not text:
+            return ""
+        if len(text) <= overlap_size:
+            return text.strip()
+
+        start_idx = len(text) - overlap_size
+        # If the slice starts inside a word, advance to the next whitespace boundary
+        if start_idx > 0 and not text[start_idx - 1].isspace() and not text[start_idx].isspace():
+            next_ws = text.find(" ", start_idx)
+            nl_ws = text.find("\n", start_idx)
+            candidates = [i for i in (next_ws, nl_ws) if i != -1]
+            if not candidates:
+                return ""
+            start_idx = min(candidates) + 1
+
+        return text[start_idx:].strip()
+
     def chunk_document(self, doc: Document) -> List[Chunk]:
         """Split a single document into deterministic chunks."""
         cleaned_text = self.cleaner.clean(doc.content)
@@ -36,37 +62,37 @@ class Chunker:
                     sent = sent.strip()
                     if not sent:
                         continue
-                    if len(current_chunk) + len(sent) + 1 <= target_size:
-                        current_chunk = f"{current_chunk} {sent}".strip()
+                    if len(current_chunk) + len(sent) + 1 <= target_size or self._is_heading_only(current_chunk):
+                        sep = "\n\n" if self._is_heading_only(current_chunk) else " "
+                        current_chunk = f"{current_chunk}{sep}{sent}".strip() if current_chunk else sent
                     else:
                         if current_chunk:
                             raw_chunks.append(current_chunk)
-                            # Compute overlap suffix
-                            overlap = current_chunk[-overlap_size:] if len(current_chunk) > overlap_size else current_chunk
-                            current_chunk = f"{overlap} {sent}".strip()
+                            overlap = self._compute_boundary_overlap(current_chunk, overlap_size)
+                            current_chunk = f"{overlap} {sent}".strip() if overlap else sent
                         else:
                             current_chunk = sent
             else:
-                if len(current_chunk) + len(para) + 2 <= target_size:
+                if len(current_chunk) + len(para) + 2 <= target_size or self._is_heading_only(current_chunk):
                     current_chunk = f"{current_chunk}\n\n{para}".strip() if current_chunk else para
                 else:
                     if current_chunk:
                         raw_chunks.append(current_chunk)
-                        overlap = current_chunk[-overlap_size:] if len(current_chunk) > overlap_size else current_chunk
-                        current_chunk = f"{overlap}\n\n{para}".strip()
+                        overlap = self._compute_boundary_overlap(current_chunk, overlap_size)
+                        current_chunk = f"{overlap}\n\n{para}".strip() if overlap else para
                     else:
                         current_chunk = para
 
         if current_chunk:
             raw_chunks.append(current_chunk)
 
-        # Merge orphan fragments shorter than min_size
+        # Merge orphan fragments shorter than min_size or heading-only blocks
         final_chunks: List[str] = []
         for rc in raw_chunks:
             rc = rc.strip()
             if not rc:
                 continue
-            if len(rc) < min_size and final_chunks:
+            if (len(rc) < min_size or self._is_heading_only(rc)) and final_chunks:
                 # Merge into previous chunk
                 final_chunks[-1] = f"{final_chunks[-1]} {rc}".strip()
             else:

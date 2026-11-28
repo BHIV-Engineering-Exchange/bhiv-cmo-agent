@@ -90,3 +90,47 @@ def test_chunking_empty_document():
     )
     chunker = Chunker()
     assert chunker.chunk_document(doc) == []
+
+
+def test_chunking_no_duplicate_heading_only_chunks_and_no_midword_overlap():
+    """DQ-002 regression: headings must not form duplicate standalone chunks and overlap must align to word boundaries."""
+    content = (
+        "# Historical Campaign Performance and ROI Benchmarks\n\n"
+        "## Metadata\n"
+        "- **document_id:** DOC-MKT-003\n"
+        "- **title:** Historical Campaign Performance and ROI Benchmarks\n"
+        "- **source:** data/marketing_corpus/DOC-MKT-003_past_performance_benchmarks.md\n"
+        "- **source_type:** analytics_benchmark\n"
+        "- **version:** 1.0.0\n"
+        "- **created_at:** 2026-09-02T10:00:00Z\n"
+        "- **updated_at:** 2026-09-17T14:00:00Z\n"
+        "- **topic:** Performance Benchmarks\n\n"
+        "## 1. Past Campaign Metrics\n"
+        "Across preceding quarters, enterprise acquisition campaigns yielded verified baseline metrics "
+        "including a 2.4% combined CTR and $32.00 historical average CAC."
+    )
+    doc = Document(
+        metadata=DocumentMetadata(
+            document_id="DOC-MKT-003",
+            title="Historical Campaign Performance and ROI Benchmarks",
+            source="data/marketing_corpus/DOC-MKT-003_past_performance_benchmarks.md",
+            source_type="analytics_benchmark",
+            version="1.0.0",
+            created_at="2026-09-02T10:00:00Z",
+            updated_at="2026-09-17T14:00:00Z",
+            topic="Performance Benchmarks"
+        ),
+        content=content,
+        content_hash="dq002_hash"
+    )
+    chunker = Chunker(ChunkingConfig(chunk_size_chars=400, chunk_overlap_chars=60, min_chunk_chars=40))
+    chunks = chunker.chunk_document(doc)
+
+    assert len(chunks) >= 2
+    # C001 must not be a heading-only chunk duplicated inside C002
+    assert "\n" in chunks[0].text
+    assert chunks[0].text != chunks[1].text[:len(chunks[0].text)]
+    # No chunk should start with a partial lowercase word fragment
+    for c in chunks:
+        first_token = c.text.lstrip().split()[0]
+        assert first_token[0].isupper() or first_token[0] in "#-*0123456789$"

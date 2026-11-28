@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bhiv.internal/schemas/proposals/cmo_provenance_metadata.schema.json",
+  "title": "CMO Marketing Corpus Provenance & Rights Metadata (CMO Domain Ratified; MDU Registration Pending)",
+  "description": "RATIFIED as CMO domain proposal under contract cmo.market_intelligence.v2 (dataset ds-cmo-marketing-001). Enterprise MDU Parakosha registration remains PENDING; global MDU schemas are untouched.",
+  "type": "object",
+  "required": [
+    "document_id",
+    "owner",
+    "rights",
+    "access_classification",
+    "approved_purpose",
+    "provenance_ref",
+    "source_type",
+    "version",
+    "retrieval_timestamp",
+    "effective_timestamp",
+    "freshness",
+    "quality_status",
+    "content_hash"
+  ],
+  "properties": {
+    "document_id": { "type": "string", "pattern": "^DOC-MKT-\\d{3}$" },
+    "owner": { "type": ["string", "null"], "description": "Explicit owner or null if unratified/unknown." },
+    "rights": {
+      "type": "string",
+      "enum": ["SYNTHETIC_PREPROD_ONLY", "INTERNAL_RESTRICTED", "UNKNOWN"]
+    },
+    "access_classification": {
+      "type": "string",
+      "enum": ["INTERNAL_NON_PRODUCTION", "RESTRICTED_PII_PROHIBITED", "UNKNOWN"]
+    },
+    "approved_purpose": { "type": "string" },
+    "provenance_ref": { "type": "string" },
+    "source_type": { "type": "string" },
+    "version": { "type": "string" },
+    "retrieval_timestamp": { "type": ["string", "null"], "format": "date-time" },
+    "effective_timestamp": { "type": ["string", "null"], "format": "date-time" },
+    "freshness": {
+      "type": "object",
+      "required": ["sla_hours", "sla_status", "freshness_state"],
+      "properties": {
+        "sla_hours": { "type": "number" },
+        "sla_status": { "type": "string", "enum": ["PROPOSED", "RATIFIED"] },
+        "freshness_state": { "type": "string", "enum": ["FRESH", "STALE", "EXEMPT_STATIC_BENCHMARK", "UNKNOWN"] }
+      }
+    },
+    "quality_status": { "type": "string", "enum": ["VERIFIED_SYNTHETIC", "NEEDS_REVIEW", "UNKNOWN"] },
+    "content_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}
