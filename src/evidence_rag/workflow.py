@@ -307,6 +307,13 @@ class DecisionWorkflow:
                 retrieved_chunks,
             )
 
+        # Bypass influencer-specific conflict topics for proposals that do not involve influencers
+        if conflict and "influencer" in conflict.topic.lower() and not is_influencer:
+            logger.info(
+                f"Bypassing influencer conflict '{conflict.topic}' for non-influencer request {request.request_id}."
+            )
+            conflict = None
+
         if conflict:
             # Tier 1: Influencer spend <= $10,000 (including $0) satisfies both $10k and $25k caps -> proceed
             if is_influencer and req_budget is not None and 0 <= req_budget <= 10000.0:
